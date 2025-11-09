@@ -61,6 +61,14 @@
         }
       }
     },
+    "projects": {
+      "badge": "Backend-Feed",
+      "title": "Projekte aus der Nest API",
+      "description": "Dieses Raster befüllt Karten direkt über den /project Endpoint des Clean-Architecture-Backends.",
+      "empty": "Aktuell sind keine Projekte verfügbar.",
+      "keysLabel": "Highlights",
+      "techsLabel": "Stack"
+    },
     "actions": {
       "badge": "Shortcuts",
       "title": "Direktzugriffe",

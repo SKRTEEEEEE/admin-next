@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { creatorData } from "@/lib/data";
 import { adminSurfaces } from "@/core/admin/surfaces";
+import { fetchLandingProjects } from "@/core/application/services/project.service";
 
 type DiagnosticId = "robots" | "i18n" | "themes" | "actions";
 
@@ -15,8 +16,13 @@ const QUICK_LINKS = [
   { key: "profile", href: "https://dev.desarrollador.tech", external: true },
 ];
 
-export default async function AdminHome() {
+interface AdminHomeProps {
+  params: { locale: string };
+}
+
+export default async function AdminHome({ params }: AdminHomeProps) {
   const t = await getTranslations("admin");
+  const projects = await fetchLandingProjects(params?.locale);
 
   return (
     <main className="admin-shell relative isolate min-h-dvh overflow-hidden bg-background text-foreground">
@@ -103,6 +109,65 @@ export default async function AdminHome() {
               </CardContent>
             </Card>
           ))}
+        </section>
+
+        <section className="admin-projects space-y-6" aria-labelledby="admin-projects-title">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t("projects.badge")}</p>
+            <h2 id="admin-projects-title" className="text-2xl font-semibold text-foreground">
+              {t("projects.title")}
+            </h2>
+            <p className="text-muted-foreground">{t("projects.description")}</p>
+          </div>
+          {projects.length === 0 ? (
+            <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
+              {t("projects.empty")}
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {projects.slice(0, 3).map((project) => (
+                <Card key={project.id} className="admin-project border-border/30 bg-card/40 backdrop-blur">
+                  <CardHeader>
+                    <CardTitle className="text-lg text-foreground">{project.title}</CardTitle>
+                    <CardDescription className="text-muted-foreground">{project.summary}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 text-sm text-muted-foreground">
+                    {project.keys.length > 0 && (
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-foreground/70">
+                          {t("projects.keysLabel")}
+                        </p>
+                        <ul className="mt-2 space-y-1">
+                          {project.keys.slice(0, 3).map((keyTitle, index) => (
+                            <li key={`${project.id}-key-${index}`} className="text-foreground/80">
+                              {keyTitle}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {project.techBadges.length > 0 && (
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-foreground/70">
+                          {t("projects.techsLabel")}
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {project.techBadges.slice(0, 6).map((badge, index) => (
+                            <span
+                              key={`${project.id}-tech-${index}`}
+                              className="rounded-full border border-border/40 px-3 py-1 text-xs text-foreground/80"
+                            >
+                              {badge}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="admin-actions space-y-6" aria-labelledby="admin-actions-title">

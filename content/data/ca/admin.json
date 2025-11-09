@@ -61,6 +61,14 @@
         }
       }
     },
+    "projects": {
+      "badge": "Feed backend",
+      "title": "Projectes des del Nest API",
+      "description": "Aquesta graella rep dades reals directament de l'endpoint /project de l'arquitectura neta.",
+      "empty": "No hi ha projectes disponibles ara mateix.",
+      "keysLabel": "Claus",
+      "techsLabel": "Stack"
+    },
     "actions": {
       "badge": "Dreceres",
       "title": "Accés ràpid",

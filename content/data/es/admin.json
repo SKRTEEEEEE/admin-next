@@ -61,6 +61,14 @@
         }
       }
     },
+    "projects": {
+      "badge": "Feed backend",
+      "title": "Proyectos servidos por Nest",
+      "description": "Esta cuadrícula consume directamente el endpoint /project del backend limpio para mostrar datos reales.",
+      "empty": "No hay proyectos disponibles en este momento.",
+      "keysLabel": "Claves",
+      "techsLabel": "Stack"
+    },
     "actions": {
       "badge": "Atajos",
       "title": "Accesos rápidos",

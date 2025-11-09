@@ -47,6 +47,8 @@ tests/
 └── utils/                   # Test utilities
     └── url.ts
 ```
+## Husky
+- Husky should run test:unit when commit
 
 ## Available Commands
 

@@ -61,6 +61,14 @@
         }
       }
     },
+    "projects": {
+      "badge": "Backend feed",
+      "title": "Projects from Nest API",
+      "description": "This grid hydrates cards straight from the /project endpoint exposed by the clean architecture backend.",
+      "empty": "No projects available right now.",
+      "keysLabel": "Highlights",
+      "techsLabel": "Stack"
+    },
     "actions": {
       "badge": "Shortcuts",
       "title": "Quick links",

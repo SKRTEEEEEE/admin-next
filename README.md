@@ -15,19 +15,53 @@
 [![Coverage: Lines](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/.github/badges/coverage-lines.json)](.github/badges/coverage-lines.json)
 </div>
 
-Landing dedicada a centralizar el estado de los micro frontends (`admin`, `profile`, `agora`) encima del monolito `profile-nest`. Está pensada como blueprint mínima: una sola página (`src/app/[locale]/page.tsx`), gradiente animado, i18n con `next-intl`, temas con `next-themes` (6 presets) y utilidades de shadcn/ui.
+> Un punto de partida minimalista y moderno para frontends. Construido con Next.js 16, React 19, TypeScript, y Tailwind CSS. Incluye soporte multiidioma, temas personalizados, y gradientes animados.
 
-## 📋 Overview
-- Control center construido con [Next.js](https://nextjs.org/docs), React 19 y TypeScript 5.
-- Incluye robots/sitemap, status API (`/api/admin/status`) y tests Playwright listos para CI.
-- Todo el contenido vive en `content/data/{locale}/admin.json`, de forma que duplicar el template es solo copiar esos JSON.
+---
 
-## 🛠️ Tech Stack
-- Next.js 16 App Router + React 19 + TypeScript 5
-- Tailwind CSS 4 + shadcn/ui + Radix UI
-- next-intl para `en/es/ca/de`
-- next-themes + tokens custom (`light`, `dark`, `neon`, `emerald`, `sunset`, `terminal`)
-- Playwright (+ NYC) para unit/component/api/e2e
+## 📋 Visión General
+
+**Admin Next** es un template de landing minimalista diseñado para centralizar y monitorear el estado de múltiples micro frontends (como `admin`, `profile`, `agora`) sobre el monolito `profile-nest`. Pensado como blueprint/template reutilizable con una arquitectura simple pero poderosa, centrada en un buen CI/CD y el uso de mis librerías base favoritas.
+
+##✨ Características Principales
+
+- 🌍 Soporte Multiidioma - Preconfigurado para inglés, español, catalán y alemán
+- 🎨 Sistema de Temas - 12 temas predefinidos con soporte para modo claro y oscuro
+- 🎭 Gradientes Animados - Fondos dinámicos configurables para crear experiencias visuales impactantes
+- ⚡ Ultra Optimizado - Construido con Next.js 16 App Router y Turbopack para máximo rendimiento
+- 🎯 100% TypeScript - Type-safety completo en todo el proyecto
+- 📱 Totalmente Responsivo - Diseño mobile-first con Tailwind CSS 4
+- 🧪 Testing Incluido - Suite completa de tests con Playwright (unitarios, componentes, API, E2E)
+- 🎭 Componentes Accesibles - Basado en Radix UI y shadcn/ui
+- 🔍 SEO Ready - Meta tags, sitemap y robots.txt preconfigurados
+- 📦 Arquitectura Simple - Una sola página, fácil de duplicar y mantener
+- 🚀 API de Estado - Endpoint de ejemplo para monitoreo de servicios
+- 🛠️ Fácil Personalización - Todo el contenido gestionado mediante archivos JSON
+
+## 🛠️ Stack Tecnológico
+
+### Tecnologías Core
+
+- **Framework:** [Next.js 16](https://nextjs.org/) con App Router
+- **UI Library:** [React 19.2.0](https://reactjs.org/)
+- **Lenguaje:** [TypeScript 5](https://www.typescriptlang.org/)
+- **Estilos:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Internacionalización:** [next-intl 4.3.9](https://next-intl-docs.vercel.app/)
+- **Temas:** [next-themes](https://github.com/pacocoursey/next-themes)
+
+### Componentes UI y Librerías
+
+- **Componentes UI:** [Radix UI](https://www.radix-ui.com/)
+- **Iconos:** [Lucide React](https://lucide.dev/)
+- **Componentes:** [shadcn/ui](https://ui.shadcn.com/)
+- **Notificaciones:** [Sonner](https://sonner.emilkowal.ski/)
+
+### Desarrollo y Testing
+
+- **Testing:** [Playwright](https://playwright.dev/) + [NYC](https://www.npmjs.com/package/nyc)
+- **Linting:** [ESLint 9](https://eslint.org/) con configuración Next.js
+- **Git Hooks:** [Husky](https://typicode.github.io/husky/)
+- **Commit Linting:** [Commitlint](https://commitlint.js.org/)
 
 ## 🚀 Getting Started
 ```bash
@@ -79,18 +113,14 @@ admin-next/
 
 ## Temas
 - Tokens base en `src/app/globals.css`
-- Presets: `light`, `dark`, `neon`, `emerald`, `sunset`, `terminal`
-- Selector accesible en la `Navbar` usando Radix Dropdown + next-themes
 
 ## SEO & utilidades
 - `robots.ts`, `sitemap.ts` y schemas siguen activos para asegurar foco SEO.
 - `AnimatedGradientBackground` recicla la lista de gradientes de `src/lib/utils.ts`.
 - `adminSurfaces` + `app/api/admin/status` sirven de ejemplo para conectar los tests API.
 
-## Tips
-- Mantén el número de dependencias bajo: antes de añadir librerías pregunta/justifica.
-- Si necesitas otro micro frontend, usa el mismo patrón: JSON por locale + única página.
-- Ejecuta `run-all-tests.sh` (Git Bash) sólo si necesitas la suite completa CI; para desarrollo basta con el flujo descrito arriba.
+## CI
+- Multiples ayudas para el desarrollo continuo, descubrelas en `.github`
 
 ## 📝 License
-Código bajo MIT License (ver LICENSE en la raíz del repo). Escríbeme si necesitas reutilizarlo en otro micro admin.
+Código bajo MIT License (ver LICENSE en la raíz del repo). Escríbeme si necesitas reutilizarlo en otro frontend.

@@ -20,6 +20,11 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Reset CI artifacts 🧹
+      run: |
+        rm -rf docs/test-results docs/coverage .nyc_output .coverage-ci || true
+        mkdir -p docs/test-results docs/coverage
+
     # Setup Node.js con caché para dependencias
     - uses: actions/setup-node@v6
       with:
@@ -85,16 +90,24 @@ jobs:
       env:
         CI: true
 
+    - name: Generate coverage summary
+      if: always()
+      run: |
+        rm -rf .github/coverage-ci
+        mkdir -p .github/coverage-ci
+        npx nyc report --reporter=json-summary --report-dir=.github/coverage-ci
+
     # Parse coverage results
     - name: Parse coverage data
       id: coverage
       if: always()
       run: |
-        if [ -f "docs/coverage/coverage-summary.json" ]; then
-          STATEMENTS=$(node -e "console.log(require('./docs/coverage/coverage-summary.json').total.statements.pct)")
-          BRANCHES=$(node -e "console.log(require('./docs/coverage/coverage-summary.json').total.branches.pct)")
-          FUNCTIONS=$(node -e "console.log(require('./docs/coverage/coverage-summary.json').total.functions.pct)")
-          LINES=$(node -e "console.log(require('./docs/coverage/coverage-summary.json').total.lines.pct)")
+        SUMMARY_PATH=".github/coverage-ci/coverage-summary.json"
+        if [ -f "$SUMMARY_PATH" ]; then
+          STATEMENTS=$(node -e "console.log(require('${SUMMARY_PATH}').total.statements.pct)")
+          BRANCHES=$(node -e "console.log(require('${SUMMARY_PATH}').total.branches.pct)")
+          FUNCTIONS=$(node -e "console.log(require('${SUMMARY_PATH}').total.functions.pct)")
+          LINES=$(node -e "console.log(require('${SUMMARY_PATH}').total.lines.pct)")
           
           echo "statements=$STATEMENTS" >> $GITHUB_OUTPUT
           echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
@@ -172,6 +185,14 @@ jobs:
         name: coverage-report
         path: docs/coverage/
         retention-days: 30
+
+    - name: Stop Next.js server ⛔
+      if: always()
+      run: |
+        if [ -f .next-server.pid ]; then
+          kill $(cat .next-server.pid) || true
+          rm -f .next-server.pid
+        fi
     
     # Comment PR con resultados
     - name: Comment PR with coverage

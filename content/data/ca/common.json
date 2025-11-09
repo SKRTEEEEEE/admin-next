@@ -7,13 +7,13 @@
         "h1": "Estàs a la pàgina arrel",
         "links": {
             "admin": "Anar a administració",
-            "academia": "Anar a academia",
-            "ceo": "Anar a sobre mi"
+            "academia": "Anar a l'acadèmia",
+            "profile": "Anar al micro frontend de perfil"
         },
         "lang": "Idioma",
         "manage-root": {
             "title": "Pàgina en construcció",
-            "desc": "Es redirigeixen les primeres visites de la pàgina arrel '/' a 'Sobre mi', ja que aquesta (pàgina arrel) es troba actualment en desenvolupament.\n\n A partir d'ara ja no seràs redirigit, però pots continuar accedint a 'Sobre mi'."
+            "desc": "Redirigim les primeres visites de '/' a la vista admin mentre acabem de polir l'arrel.\n\n A partir d'ara ja no se't redirigirà, però pots tornar al panell quan vulguis."
 
         }
     }

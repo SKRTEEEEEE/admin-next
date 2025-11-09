@@ -8,12 +8,12 @@
     "links": {
       "admin": "Gehe zu Admin",
       "academia": "Gehe zur Akademie",
-      "ceo": "Gehe zu Über mich"
+      "profile": "Gehe zum Profil-Frontend"
     },
     "lang": "Sprache", 
     "manage-root": {
       "title": "Seite im Aufbau",
-      "desc": "Die ersten Besuche der Hauptseite '/' werden auf 'Über mich' weitergeleitet, da diese (Hauptseite) derzeit in Entwicklung ist.\n\n Ab jetzt wirst du nicht mehr weitergeleitet, aber du kannst weiterhin auf 'Über mich' zugreifen."
+      "desc": "Die ersten Besuche der Hauptseite '/' werden auf das Admin-Panel umgeleitet, solange wir das Root-Layout finalisieren.\n\n Du kannst das Kontrollzentrum jederzeit erneut öffnen."
 
     }
   }

@@ -33,7 +33,7 @@ tests/
 │   ├── slider-techs.spec.ts
 │   ├── pages-performance.spec.ts
 │   ├── performance-report.spec.ts
-│   └── ceo-components.spec.ts
+│   └── admin-components.spec.ts
 ├── pages/                   # Page tests (⚠️ requires server)
 │   ├── portafolio.spec.ts
 │   └── info.spec.ts

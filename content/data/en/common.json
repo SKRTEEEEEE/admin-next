@@ -7,13 +7,13 @@
         "h1": "You are on the root page",
         "links": {
             "admin": "Go to admin",
-            "academia": "Go to academy",
-            "ceo": "Go to about me"
+            "academia": "Go to academia",
+            "profile": "Go to profile micro frontend"
         },
         "lang": "Language", 
         "manage-root": {
             "title": "Page under construction",
-            "desc": "The first visits to the root page '/' are redirected to 'About me', as this (root page) is currently under development.\n\n From now on, you will no longer be redirected, but you can still access 'About me'."
+            "desc": "The first visits to '/' are redirected to the admin view while the root page finishes bootstrapping.\n\n You can still access the control panel at any time."
 
         }
     }

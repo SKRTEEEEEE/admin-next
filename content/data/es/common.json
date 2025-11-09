@@ -8,12 +8,12 @@
         "links": {
             "admin": "Ir a admin",
             "academia": "Ir a academia",
-            "ceo": "Ir a sobre mi"
+            "profile": "Ir al micro frontend de perfil"
         },
         "lang": "Idioma",
         "manage-root": {
             "title": "Página en construcción",
-            "desc": "Se redirige las primeras visitas de la página raíz '/' a 'Sobre mi', ya que esta (página raíz) actualmente se encuentra en desarrollo.\n\n A partir de ahora ya no seras redirigido, pero puedes seguir accediendo a 'Sobre mi'."
+            "desc": "Se redirige las primeras visitas de la página raíz '/' a la vista admin, ya que esta (página raíz) actualmente se encuentra en desarrollo.\n\n A partir de ahora ya no seras redirigido, pero puedes seguir accediendo al panel."
         }
     }
 }

@@ -1,0 +1,74 @@
+{
+  "admin": {
+    "hero": {
+      "badge": "Plantilla admin",
+      "title": "Centre de control admin",
+      "subtitle": "Una sola superfície per orquestrar tots els micro frontends.",
+      "description": "Supervisa desplegaments, feature flags i CI sense sortir d'aquesta pàgina.",
+      "primary": "Obrir consola admin",
+      "secondary": "Veure registres de desplegament",
+      "sync": "Sincronització activa"
+    },
+    "status": {
+      "badge": "Micro frontends",
+      "title": "Estat del runtime compartit",
+      "description": "Les superfícies comparteixen tokens de disseny, auth i pipelines DevOps.",
+      "realtime": "Instantània en temps real",
+      "items": {
+        "admin": {
+          "label": "Interfície admin",
+          "detail": "Panell intern amb rols i feature toggles."
+        },
+        "profile": {
+          "label": "App de perfil",
+          "detail": "Quadre de comandament orientat al client connectat al Nest."
+        },
+        "agora": {
+          "label": "Agora marketplace",
+          "detail": "Catàleg de comerç sincronitzat amb el backend."
+        }
+      },
+      "states": {
+        "online": "En línia",
+        "standby": "En espera",
+        "syncing": "Sincronitzant"
+      }
+    },
+    "diagnostics": {
+      "badge": "Comprovacions",
+      "title": "Diagnòstic operatiu",
+      "description": "Llista mínima per robots.txt, i18n, temes i GitHub Actions.",
+      "items": {
+        "robots": {
+          "title": "robots.txt",
+          "description": "Regles generades amb l'API de metadata de Next.",
+          "status": "Configurat"
+        },
+        "i18n": {
+          "title": "Enrutament i18n",
+          "description": "Locales gestionats amb next-intl (en/es/ca/de).",
+          "status": "4 idiomes"
+        },
+        "themes": {
+          "title": "Sistema de temes",
+          "description": "Sis temes basats en next-themes i shadcn/ui.",
+          "status": "6 temes"
+        },
+        "actions": {
+          "title": "GitHub Actions",
+          "description": "Workflow per lint, tests i deploy.",
+          "status": "CI saludable"
+        }
+      }
+    },
+    "actions": {
+      "badge": "Dreceres",
+      "title": "Accés ràpid",
+      "links": {
+        "github": "Obrir GitHub",
+        "nest": "Backend Nest",
+        "profile": "Frontend de perfil"
+      }
+    }
+  }
+}

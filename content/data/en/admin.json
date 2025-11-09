@@ -1,0 +1,74 @@
+{
+  "admin": {
+    "hero": {
+      "badge": "Admin template",
+      "title": "Admin control center",
+      "subtitle": "One surface orchestrating the shared runtime for every micro frontend.",
+      "description": "Audit deploys, feature flags and CI recipes without leaving this page.",
+      "primary": "Open admin console",
+      "secondary": "View deployment logs",
+      "sync": "Live sync ready"
+    },
+    "status": {
+      "badge": "Micro frontends",
+      "title": "Shared runtime status",
+      "description": "Each surface reuses design tokens, auth flows and CI/CD pipelines.",
+      "realtime": "Real-time snapshot",
+      "items": {
+        "admin": {
+          "label": "Admin interface",
+          "detail": "Controls role-based tooling and feature toggles."
+        },
+        "profile": {
+          "label": "Profile app",
+          "detail": "Customer-facing profile dashboard linked to Nest."
+        },
+        "agora": {
+          "label": "Agora marketplace",
+          "detail": "Commerce catalogue synchronized with backend pipelines."
+        }
+      },
+      "states": {
+        "online": "Online",
+        "standby": "Standby",
+        "syncing": "Syncing"
+      }
+    },
+    "diagnostics": {
+      "badge": "Checks",
+      "title": "Operational diagnostics",
+      "description": "Baseline checklist for robots.txt, i18n, theming and CI.",
+      "items": {
+        "robots": {
+          "title": "robots.txt",
+          "description": "Rules generated through Next metadata API.",
+          "status": "Configured"
+        },
+        "i18n": {
+          "title": "i18n routing",
+          "description": "Locales managed with next-intl (en/es/ca/de).",
+          "status": "4 locales"
+        },
+        "themes": {
+          "title": "Theme system",
+          "description": "Six presets powered by next-themes + shadcn/ui tokens.",
+          "status": "6 themes"
+        },
+        "actions": {
+          "title": "GitHub Actions",
+          "description": "Reusable workflow for lint, tests and deploy steps.",
+          "status": "CI healthy"
+        }
+      }
+    },
+    "actions": {
+      "badge": "Shortcuts",
+      "title": "Quick links",
+      "links": {
+        "github": "Open GitHub",
+        "nest": "Profile Nest backend",
+        "profile": "Profile frontend"
+      }
+    }
+  }
+}

@@ -32,7 +32,7 @@ export async function manageRoot(request: NextRequest){
         if(visits === 3){
             return NextResponse.redirect(new URL(`/${locale}?redirect=manageRoot`, 'http://' + (await headers()).get('host')));
         }else{
-        return NextResponse.redirect(new URL(`/${locale}/ceo`, 'http://' + (await headers()).get('host')));}
+        return NextResponse.redirect(new URL(`/${locale}`, 'http://' + (await headers()).get('host')));}
       } 
     }
     //       else {

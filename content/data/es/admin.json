@@ -1,0 +1,74 @@
+{
+  "admin": {
+    "hero": {
+      "badge": "Plantilla admin",
+      "title": "Centro de control admin",
+      "subtitle": "Una superficie única para coordinar los micro frontends.",
+      "description": "Supervisa despliegues, feature flags e integraciones CI sin salir de esta vista.",
+      "primary": "Abrir consola admin",
+      "secondary": "Ver registros de despliegue",
+      "sync": "Sincronización en vivo"
+    },
+    "status": {
+      "badge": "Micro frontends",
+      "title": "Runtime compartido",
+      "description": "Todas las superficies reutilizan tokens de diseño, autenticación y flujos CI/CD.",
+      "realtime": "Lectura en tiempo real",
+      "items": {
+        "admin": {
+          "label": "Interfaz admin",
+          "detail": "Panel de control para roles internos y feature toggles."
+        },
+        "profile": {
+          "label": "Frontend de perfil",
+          "detail": "Experiencia orientada al cliente enlazada al backend Nest."
+        },
+        "agora": {
+          "label": "Agora marketplace",
+          "detail": "Catálogo sincronizado con pipelines de comercio."
+        }
+      },
+      "states": {
+        "online": "En línea",
+        "standby": "En espera",
+        "syncing": "Sincronizando"
+      }
+    },
+    "diagnostics": {
+      "badge": "Comprobaciones",
+      "title": "Diagnósticos operativos",
+      "description": "Checklist mínimo para robots.txt, i18n, temas dinámicos y GitHub Actions.",
+      "items": {
+        "robots": {
+          "title": "robots.txt",
+          "description": "Reglas generadas con metadata API de Next.",
+          "status": "Configurado"
+        },
+        "i18n": {
+          "title": "Enrutado i18n",
+          "description": "Locales gestionados vía next-intl (en/es/ca/de).",
+          "status": "4 idiomas"
+        },
+        "themes": {
+          "title": "Sistema de temas",
+          "description": "Seis temas con next-themes y tokens shadcn/ui.",
+          "status": "6 temas"
+        },
+        "actions": {
+          "title": "GitHub Actions",
+          "description": "Workflow para lint + tests + deploy.",
+          "status": "CI saludable"
+        }
+      }
+    },
+    "actions": {
+      "badge": "Atajos",
+      "title": "Accesos rápidos",
+      "links": {
+        "github": "Abrir GitHub",
+        "nest": "Backend Nest",
+        "profile": "Frontend de perfil"
+      }
+    }
+  }
+}

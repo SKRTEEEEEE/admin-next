@@ -22,7 +22,7 @@ jobs:
 
     - name: Reset CI artifacts 🧹
       run: |
-        rm -rf docs/test-results docs/coverage .nyc_output .coverage-ci || true
+        rm -rf docs/test-results docs/coverage .nyc_output || true
         mkdir -p docs/test-results docs/coverage
 
     # Setup Node.js con caché para dependencias
@@ -91,19 +91,16 @@ jobs:
       env:
         CI: true
 
-    - name: Generate coverage summary
+    - name: Ensure coverage summary
       if: always()
-      run: |
-        rm -rf .github/coverage-ci
-        mkdir -p .github/coverage-ci
-        npx nyc report --reporter=json-summary --report-dir=.github/coverage-ci
+      run: npx nyc report --reporter=json-summary --report-dir=docs/coverage
 
     # Parse coverage results
     - name: Parse coverage data
       id: coverage
       if: always()
       run: |
-        SUMMARY_PATH=".github/coverage-ci/coverage-summary.json"
+        SUMMARY_PATH="docs/coverage/coverage-summary.json"
         if [ -f "$SUMMARY_PATH" ]; then
           STATEMENTS=$(node -e "console.log(require('${SUMMARY_PATH}').total.statements.pct)")
           BRANCHES=$(node -e "console.log(require('${SUMMARY_PATH}').total.branches.pct)")
@@ -124,52 +121,79 @@ jobs:
           echo "lines=0" >> $GITHUB_OUTPUT
         fi
 
-    # Update README with coverage badges (solo en main)
-    - name: Update README with coverage badges
+    - name: Create coverage badges 🏅
       if: github.ref == 'refs/heads/main' && steps.coverage.outputs.statements != '0'
       run: |
-        STATEMENTS="${{ steps.coverage.outputs.statements }}"
-        BRANCHES="${{ steps.coverage.outputs.branches }}"
-        FUNCTIONS="${{ steps.coverage.outputs.functions }}"
-        LINES="${{ steps.coverage.outputs.lines }}"
-        
-        # Generar color basado en porcentaje
-        get_color() {
-          val=$1
-          if (( $(echo "$val >= 80" | bc -l) )); then echo "brightgreen"
-          elif (( $(echo "$val >= 60" | bc -l) )); then echo "yellow"
-          else echo "red"; fi
-        }
-        
-        STMT_COLOR=$(get_color $STATEMENTS)
-        BRANCH_COLOR=$(get_color $BRANCHES)
-        FUNC_COLOR=$(get_color $FUNCTIONS)
-        LINE_COLOR=$(get_color $LINES)
-        
-        # Crear línea de badges con formato específico
-        BADGES="![Test Coverage](https://img.shields.io/badge/TEST-Coverage-green?style=social) [![Coverage: Statements](https://img.shields.io/badge/Statements-${STATEMENTS}%25-${STMT_COLOR}?style=flat-square)](https://github.com/${{ github.repository }}) [![Coverage: Branches](https://img.shields.io/badge/Branches-${BRANCHES}%25-${BRANCH_COLOR}?style=flat-square)](https://github.com/${{ github.repository }}) [![Coverage:Functions](https://img.shields.io/badge/Functions-${FUNCTIONS}%25-${FUNC_COLOR}?style=flat-square)](https://github.com/${{ github.repository }}) [![Coverage: Lines](https://img.shields.io/badge/Lines-${LINES}%25-${LINE_COLOR}?style=flat-square)](https://github.com/${{ github.repository }})"
-        
-        # Actualizar README - añadir después de los badges de tecnologías
-        if grep -q "Test Coverage" README.md && grep -q "Coverage: Statements" README.md; then
-          # Reemplazar línea existente
-          sed -i "/Test Coverage.*Coverage: Statements/c\\$BADGES" README.md
-        elif grep -q "Coverage: Statements" README.md; then
-          # Si solo existe la versión antigua, reemplazarla
-          sed -i "/Coverage: Statements/c\\$BADGES" README.md
-        else
-          # Añadir después de la línea de License badge (último badge de tecnologías)
-          sed -i "/License.*MIT.*for-the-badge/a\\\\n$BADGES" README.md
-        fi
+        mkdir -p .github/badges
 
-    # Commit y push de README actualizado
+        get_color() {
+          local value=$(echo "$1" | awk '{printf "%.0f", $1}')
+          if [ "$value" -ge 80 ]; then
+            echo "brightgreen"
+          elif [ "$value" -ge 40 ]; then
+            echo "orange"
+          elif [ "$value" -ge 10 ]; then
+            echo "darkorange"
+          else
+            echo "red"
+          fi
+        }
+
+        STATEMENTS_COLOR=$(get_color "${{ steps.coverage.outputs.statements }}")
+        BRANCHES_COLOR=$(get_color "${{ steps.coverage.outputs.branches }}")
+        FUNCTIONS_COLOR=$(get_color "${{ steps.coverage.outputs.functions }}")
+        LINES_COLOR=$(get_color "${{ steps.coverage.outputs.lines }}")
+
+        cat > .github/badges/coverage-statements.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Statements",
+          "message": "${{ steps.coverage.outputs.statements }}%",
+          "color": "${STATEMENTS_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/coverage-branches.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Branches",
+          "message": "${{ steps.coverage.outputs.branches }}%",
+          "color": "${BRANCHES_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/coverage-functions.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Functions",
+          "message": "${{ steps.coverage.outputs.functions }}%",
+          "color": "${FUNCTIONS_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/coverage-lines.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Lines",
+          "message": "${{ steps.coverage.outputs.lines }}%",
+          "color": "${LINES_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
     - name: Commit coverage badges
       if: github.ref == 'refs/heads/main' && steps.coverage.outputs.statements != '0'
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add README.md
-        git diff --staged --quiet || git commit -m "docs: update coverage badges [skip ci]"
+        git add .github/badges/*.json
+        git diff --staged --quiet || git commit -m "chore: update coverage badges [skip ci]"
         git push
+
+    # README already points to shields endpoints; no automatic edits needed
 
     # Upload test report
     - uses: actions/upload-artifact@v5

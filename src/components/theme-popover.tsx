@@ -101,7 +101,11 @@ export function ThemePopover() {
               >
                 <span className={cn("h-4 w-4 rounded-full border", preset.swatch)} aria-hidden="true" />
                 <span className="capitalize">{preset.name}</span>
-                {isActive && <span className="ml-auto text-xs font-semibold text-primary">Active</span>}
+                {isActive && (
+                  <span aria-hidden="true" className="ml-auto text-xs font-semibold text-primary">
+                    Active
+                  </span>
+                )}
               </button>
             );
           })}

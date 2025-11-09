@@ -13,9 +13,11 @@ test.describe("Admin theming", () => {
     const toggle = page.getByRole("button", { name: /customize theme/i });
 
     await toggle.click();
+    await page.getByRole("button", { name: /^soft$/i }).waitFor({ state: "visible" });
     await page.getByRole("button", { name: /^soft$/i }).click();
     await page.waitForFunction(() => document.documentElement.getAttribute("data-theme") === "dark-soft");
 
+    await toggle.click();
     await toggle.click();
     await page.getByRole("button", { name: /^light$/i }).click();
     await page.getByRole("button", { name: /^grays$/i }).click();

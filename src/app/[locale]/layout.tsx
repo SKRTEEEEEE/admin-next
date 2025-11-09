@@ -7,7 +7,6 @@ import { routing } from "@/lib/i18n/routing";
 import { Toaster } from "@/components/ui/sonner";
 import { ReactNode } from "react";
 import { ThemeProvider } from "next-themes";
-import { Navbar } from "@/components/oth/navbar";
 import { 
   generateMetadata as generateSEOMetadata, 
   personalInfo 
@@ -17,6 +16,7 @@ import {
   generateWebSiteSchema 
 } from "@/lib/seo/schemas";
 import { Metadata } from "next";
+import { Navbar } from "@/components/navigation/admin-navbar";
 
 // Optimize font loading for better LCP
 const fontSans = FontSans({ 
@@ -75,17 +75,20 @@ export default async function LocaleLayout({
   const websiteSchema = generateWebSiteSchema(locale as 'es' | 'en' | 'ca' | 'de');
 
   return (
-    <html suppressHydrationWarning className="scroll-pt-[3.5rem] dark" lang={locale}>
+    <html suppressHydrationWarning className="scroll-pt-[3.5rem]" lang={locale}>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              try {
-                const theme = localStorage.getItem('theme-preference') || 'dark';
-                document.documentElement.classList.add(theme);
-              } catch (e) {
-                document.documentElement.classList.add('dark');
-              }
+              (function() {
+                var fallback = 'dark-soft';
+                try {
+                  var theme = localStorage.getItem('admin-theme') || fallback;
+                  document.documentElement.setAttribute('data-theme', theme);
+                } catch (e) {
+                  document.documentElement.setAttribute('data-theme', fallback);
+                }
+              })();
             `,
           }}
         />
@@ -99,26 +102,20 @@ export default async function LocaleLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body
-        className={cn("max-h-dvh  bg-background font-sans antialiased", fontSans.variable)}
-      >
+      <body className={cn("min-h-dvh bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
+          attribute="data-theme"
+          defaultTheme="dark-soft"
+          storageKey="admin-theme"
           enableSystem={false}
-          storageKey="theme-preference"
+          disableTransitionOnChange
         >
           <NextIntlClientProvider messages={messages}>
             <div
-              style={{
-                backgroundImage: randomGradient,
-              }}
-              className="h-dvh bg-no-repeat "
+              style={{ backgroundImage: randomGradient }}
+              className="min-h-dvh bg-cover bg-fixed bg-no-repeat"
             >
-                <div className="backdrop-blur-3xl bg-neutral-100/10 shadow-lg w-full py-1 fixed flex z-50 justify-center">
-                  <Navbar />
-                </div>
-
+              <Navbar />
               <Toaster position="bottom-right" />
               {children}
             </div>

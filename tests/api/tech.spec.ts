@@ -1,137 +1,27 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
+import { GET as getStatus } from "../../src/app/api/admin/status/route";
+import { adminSurfaces } from "../../src/core/admin/surfaces";
 
-/**
- * API Tests for Tech Endpoints
- * Testing profile-nest backend tech endpoints consumed by profile-next
- */
+test.describe("Admin status API", () => {
+  test("returns the list of micro frontends", async () => {
+    const response = await getStatus();
+    const body = await response.json();
 
-const BASE_URL = process.env.TEST_ENV !== 'development' 
-  ? 'https://kind-creation-production.up.railway.app' 
-  : 'http://localhost:3001';
-
-test.describe('Tech API Endpoints', () => {
-  
-  test('GET /tech/db - should return database techs', async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/tech/db`);
-    
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
-    
-    const data = await response.json();
-    
-    expect(data).toHaveProperty('success');
-    expect(data).toHaveProperty('data');
-    expect(data.success).toBe(true);
-    expect(Array.isArray(data.data)).toBeTruthy();
-    
-    // Verify response has timestamp and type
-    if (data.timestamp) {
-      expect(typeof data.timestamp).toBe('number');
-    }
-    if (data.type) {
-      expect(typeof data.type).toBe('string');
-    }
+    expect(body.success).toBe(true);
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data.length).toBe(adminSurfaces.length);
   });
 
-  test('GET /tech/flatten - should return flattened techs', async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/tech/flatten`);
-    
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
-    
-    const data = await response.json();
-    
-    expect(data).toHaveProperty('success');
-    expect(data.success).toBe(true);
-    expect(Array.isArray(data.data)).toBeTruthy();
-    
-    // Verify flattened structure
-    if (data.data.length > 0) {
-      const tech = data.data[0];
-      expect(tech).toHaveProperty('nameId');
-      expect(tech).toHaveProperty('nameBadge');
-      expect(tech).toHaveProperty('afinidad');
-      expect(tech).toHaveProperty('experiencia');
-    }
-  });
+  test("includes the expected fields for each surface", async () => {
+    const response = await getStatus();
+    const body = await response.json();
 
-  test('GET /tech/cat - should return categorized techs', async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/tech/cat`);
-    
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
-    
-    const data = await response.json();
-    
-    expect(data).toHaveProperty('success');
-    expect(data.success).toBe(true);
-    
-    // Data field is optional - endpoint might return empty data
-    if (data.data) {
-      // Data structure might vary, check for either categorized or flattened
-      if (data.data.dispoFw) {
-        expect(Array.isArray(data.data.dispoFw)).toBeTruthy();
-      }
-      if (data.data.dispoLeng) {
-        expect(Array.isArray(data.data.dispoLeng)).toBeTruthy();
-      }
-    } else {
-      // If no data, verify it has timestamp and type (alternative response format)
-      expect(data).toHaveProperty('timestamp');
-      expect(data).toHaveProperty('type');
-    }
-  });
-
-  test('GET /tech/full - should return full tech data', async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/tech/full`);
-    
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
-    
-    const data = await response.json();
-    
-    expect(data).toHaveProperty('success');
-    expect(data.success).toBe(true);
-    expect(data.data).toHaveProperty('techs');
-    expect(data.data).toHaveProperty('flattenTechs');
-    expect(data.data).toHaveProperty('dispoFw');
-    expect(data.data).toHaveProperty('dispoLeng');
-  });
-
-  test('GET /tech/flatten - response should contain correct tech properties', async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/tech/flatten`);
-    const data = await response.json();
-    
-    if (data.data && data.data.length > 0) {
-      data.data.forEach((tech: Record<string, unknown>) => {
-        expect(tech).toHaveProperty('nameId');
-        expect(tech).toHaveProperty('nameBadge');
-        expect(typeof tech.afinidad).toBe('number');
-        expect(typeof tech.experiencia).toBe('number');
-        expect(tech.afinidad).toBeGreaterThanOrEqual(0);
-        expect(tech.afinidad).toBeLessThanOrEqual(100);
-        expect(tech.experiencia).toBeGreaterThanOrEqual(0);
-        expect(tech.experiencia).toBeLessThanOrEqual(100);
-      });
-    }
-  });
-
-  test('GET /tech endpoints - should be fast (< 2s)', async ({ request }) => {
-    const endpoints = ['db', 'flatten', 'full']; // Removed 'cat' as it might not be available
-    
-    for (const endpoint of endpoints) {
-      const startTime = Date.now();
-      const response = await request.get(`${BASE_URL}/tech/${endpoint}`);
-      const endTime = Date.now();
-      
-      const duration = endTime - startTime;
-      
-      // More lenient - some endpoints might be slower
-      if (response.ok()) {
-        expect(duration).toBeLessThan(5000); // 5 seconds instead of 2
-      } else {
-        console.log(`Endpoint /tech/${endpoint} not available - status: ${response.status()}`);
-      }
-    }
+    body.data.forEach((surface: Record<string, unknown>) => {
+      expect(surface).toHaveProperty("id");
+      expect(surface).toHaveProperty("state");
+      expect(surface).toHaveProperty("endpoint");
+      expect(surface).toHaveProperty("region");
+      expect(surface).toHaveProperty("version");
+    });
   });
 });

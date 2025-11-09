@@ -13,17 +13,8 @@ import { routing } from '@/lib/i18n/routing';
  * targeting "dev desarrollador tech" and "dev desarollador tech" searches
  */
 
-// Define all static routes in the application
-const staticRoutes = [
-  '',              // Home page
-  '/proyectos',    // Projects page
-  '/portafolio',   // Portfolio page
-  '/info',         // Tech stack/Info page
-  '/estudios',     // Studies page
-  '/code',         // Code page
-  '/gradients',    // Gradients page
-  '/docs',         // Documentation page (if applicable)
-];
+// Single admin surface exposed publicly
+const staticRoutes = [''];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const locales = routing.locales;

@@ -1,119 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { getUrl } from "../utils/url";
 
-test.describe("Navbar Component Performance", () => {
-  test("should render navbar efficiently on home page", async ({ page }) => {
-    const startTime = Date.now();
+test.describe("Admin navbar", () => {
+  test("exposes brand, apps trigger and gradient link", async ({ page }) => {
     await page.goto(getUrl());
-    await page.waitForLoadState("networkidle");
-
-    // Check if navbar is rendered
-    const navbar = page.locator('nav[data-orientation="horizontal"]').first();
+    const navbar = page.locator(".admin-navbar");
     await expect(navbar).toBeVisible();
-    
-    const renderTime = Date.now() - startTime;
-    console.log(`Navbar render time on home: ${renderTime}ms`);
-    // Increased timeout to 20 seconds to account for real-world performance and first load
-    expect(renderTime).toBeLessThan(20000);
+    await expect(navbar.getByText(/Admin Control/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Apps/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Gradients/i }).first()).toBeVisible();
   });
 
-  test("should render navigation menu items without delay", async ({ page }) => {
+  test("shows external icons and theme popover", async ({ page }) => {
     await page.goto(getUrl());
-    await page.waitForLoadState("networkidle");
-
-    // Test navigation menu visibility
-    const navList = page.locator('ul[data-orientation="horizontal"]').first();
-    
-    // Check if nav list exists, if not, try alternative selector
-    const navListExists = await navList.count();
-    
-    if (navListExists > 0) {
-      await expect(navList).toBeVisible();
-      
-      // Count navigation items
-      const navItems = navList.locator('li[data-orientation="horizontal"]');
-      const count = await navItems.count();
-      
-      console.log(`Navbar items count: ${count}`);
-      expect(count).toBeGreaterThanOrEqual(0);
-    } else {
-      // Check for any nav element as fallback
-      const anyNav = page.locator('nav').first();
-      await expect(anyNav).toBeVisible();
-      console.log('Navbar items count: Navigation structure may have changed');
-    }
-  });
-
-  test("should handle navigation menu interactions efficiently", async ({ page }) => {
-    await page.goto(getUrl());
-    await page.waitForLoadState("networkidle");
-
-    // Try multiple selectors for menu triggers
-    const menuTriggerSelectors = [
-      '[data-state="closed"][data-radix-collection-item]',
-      '[role="button"]',
-      'button',
-      'nav a',
-      '[data-radix-collection-item]'
-    ];
-    
-    let interacted = false;
-    
-    for (const selector of menuTriggerSelectors) {
-      const menuTrigger = page.locator(selector).first();
-      const count = await menuTrigger.count();
-      
-      if (count > 0) {
-        try {
-          const interactionStart = Date.now();
-          await menuTrigger.click({ timeout: 2000 });
-          await page.waitForTimeout(200); // Allow animation
-          const interactionTime = Date.now() - interactionStart;
-          
-          console.log(`Navigation menu interaction time: ${interactionTime}ms`);
-          expect(interactionTime).toBeLessThan(1000); // More lenient timeout
-          interacted = true;
-          break;
-        } catch {
-          // Try next selector
-          continue;
-        }
-      }
-    }
-    
-    // If no interaction possible, just verify navbar is present
-    if (!interacted) {
-      const nav = page.locator('nav').first();
-      await expect(nav).toBeVisible();
-      console.log('Navigation menu interaction time: 400ms'); // Default value
-    }
-  });
-
-  test("should not cause layout shifts", async ({ page }) => {
-    await page.goto(getUrl());
-    
-    // Measure CLS for navbar area
-    const cls = await page.evaluate(() => {
-      return new Promise<number>((resolve) => {
-        let clsValue = 0;
-        const observer = new PerformanceObserver((list) => {
-          for (const entry of list.getEntries()) {
-            const layoutShiftEntry = entry as PerformanceEntry & { hadRecentInput?: boolean; value?: number };
-            if (!layoutShiftEntry.hadRecentInput) {
-              clsValue += layoutShiftEntry.value || 0;
-            }
-          }
-        });
-        observer.observe({ type: "layout-shift", buffered: true });
-        
-        setTimeout(() => {
-          observer.disconnect();
-          resolve(clsValue);
-        }, 3000);
-      });
-    });
-    
-    console.log(`Navbar CLS: ${cls}`);
-    expect(cls).toBeLessThan(0.1);
+    const githubLink = page.locator(".admin-navbar").getByRole("link", { name: /GitHub/i }).first();
+    await expect(githubLink).toBeVisible();
+    await expect(page.getByRole("button", { name: /customize theme/i })).toBeVisible();
   });
 });

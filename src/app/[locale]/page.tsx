@@ -1,94 +1,132 @@
-import { CoverParticles } from "@/components/oth/cover-particles";
-import { RenderLocalNav } from "@/components/oth/render-local-nav";
-import { StaticTextWithAnimation } from "@/components/oth/static-text-with-animation";
-import { creatorData } from "@/lib/data";
-import { cn } from "@/lib/utils";
-import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { creatorData } from "@/lib/data";
+import { adminSurfaces } from "@/core/admin/surfaces";
 
-export default async function Home() {
-  const t = await getTranslations("ceo.main.introduction");
-  const baseCNLocalNav = "w-52 flex items-center px-4 py-2 sm:my-2 transition-all border-2 cursor-pointer text-md  rounded-xl hover:shadow-md hover:shadow-white/50"
+type DiagnosticId = "robots" | "i18n" | "themes" | "actions";
+
+const DIAGNOSTIC_ITEMS: DiagnosticId[] = ["robots", "i18n", "themes", "actions"];
+
+const QUICK_LINKS = [
+  { key: "github", href: creatorData.githubUrl, external: true },
+  { key: "nest", href: "http://localhost:3001", external: true },
+  { key: "profile", href: "https://dev.desarrollador.tech", external: true },
+];
+
+export default async function AdminHome() {
+  const t = await getTranslations("admin");
 
   return (
-    <main className="max-h-dvh w-full p-1 md:pb-8 md:pt-12 px-4 sm:px-6 lg:px-8">
-      <CoverParticles />
-      <section className="z-20 select-none w-full" aria-labelledby="hero-heading">
-        <header className="flex justify-center w-full">
-          <h1
-            id="hero-heading"
-            tabIndex={0}
-            className="mt-6 lg:flex lg:items-center lg:gap-24 relative top-6 font-bold text-left"
-          >
-            {/* Texto de saludo + introducción */}
-            <div className="flex gap-6">
-              <span className="block text-base md:text-xl lg:text-2xl text-primary-ceo-300">
-                {t("greeting")},
-              </span>
-              <span className="block text-base md:text-xl lg:text-2xl text-primary-ceo-400">
-                {t("introduction")}
-              </span>
-            </div>
-
-            <span className="block xl:mt-0 sm:mt-2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-              Adan Reh Mañach
+    <main className="admin-shell relative isolate min-h-dvh overflow-hidden bg-background text-foreground">
+      <div
+        className="admin-shell__glow pointer-events-none absolute inset-0 -z-10 opacity-60 blur-3xl"
+        style={{
+          background: "radial-gradient(120% 120% at 50% 0%, hsl(var(--primary)) 0%, transparent 55%)",
+        }}
+      />
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12 px-4 py-16">
+        <section className="admin-hero space-y-6 text-center" aria-labelledby="admin-hero-title">
+          <p className="admin-hero-badge inline-flex items-center justify-center gap-2 rounded-full border border-border/60 bg-card/40 px-4 py-1 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            {t("hero.badge")}
+            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" aria-hidden="true" />
+          </p>
+          <div className="space-y-4">
+            <h1 id="admin-hero-title" className="text-4xl font-semibold leading-tight md:text-5xl">
+              {t("hero.title")}
+            </h1>
+            <p className="text-lg text-muted-foreground md:text-xl">{t("hero.subtitle")}</p>
+            <p className="text-base text-muted-foreground/80">{t("hero.description")}</p>
+          </div>
+          <div className="admin-hero-actions flex flex-wrap items-center justify-center gap-4">
+            <Button className="admin-cta" size="lg">
+              {t("hero.primary")}
+            </Button>
+            <Button variant="outline" size="lg" className="admin-cta__secondary border-border/50 text-foreground">
+              {t("hero.secondary")}
+            </Button>
+            <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              {t("hero.sync")}
             </span>
-            <span className="hidden xl:inline-block text-7xl hover:animate-caret-blink origin-bottom-left " role="img" aria-label="waving hand">
-              👋
-            </span>
-          </h1>
-        </header>
+          </div>
+        </section>
 
-        <div className="z-20 grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 items-start justify-around max-h-dvh p-6 py-10 xl:pt-24 md:my-auto">
-          {/* Navigation Links - Primary Actions */}
-          <section className="flex flex-col items-center gap-1 font-semibold md:items-end md:gap-6 order-last md:order-none" aria-labelledby="primary-actions-heading">
-            <h2 id="primary-actions-heading" className="sr-only">{t("buttons.primary_actions") || "Primary Actions"}</h2>
-            <RenderLocalNav type="portafolio" className={cn(baseCNLocalNav,"bg-primary-ceo-800/80 hover:bg-primary-ceo-900/20")} config={{text: t("buttons.view_projects"), pathname: ""}}/>
-            <RenderLocalNav type="info" className={cn(baseCNLocalNav," bg-primary-ceo-800/70 hover:bg-primary-ceo-900/20")} config={{text: t("buttons.tech_stack"), pathname: ""}}/>
-            <RenderLocalNav type="estudios" className={cn(baseCNLocalNav,"bg-primary-ceo-800/60 hover:bg-primary-ceo-900/20")} config={{text: t("buttons.studies"), pathname: ""}}/>
-            <RenderLocalNav type="cv" className={cn(baseCNLocalNav,"bg-primary-ceo-900/60 hover:bg-primary-ceo-900/20")} config={{text: t("buttons.cv"), pathname: ""}}/>
-            <Link
-              href={creatorData.oldProfileWebUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className=" w-52 flex items-center justify-between px-4 py-2 my-5 transition-all border shadow-secondary-ceo-900 shadow-sm cursor-pointer text-md text-primary-ceo-200 border-secondary-ceo/10 rounded-xl hover:shadow-xl hover:shadow-secondary-ceo"
-              aria-label="Visit old frontend version (opens in new tab)"
-            >
-              <div role="img" aria-hidden="true">🔸</div>
-              <div className="w-full text-center">
-                {t("buttons.old_frontend")}
-              </div>
-            </Link>
-          </section>
-          {/* Main Content - Introduction and Description */}
-          <article className="flex flex-col justify-center max-w-xl col-span-2 order-first md:order-none">
-            <h2 className="h-32 lg:h-44 text-2xl mt-2 leading-tight text-center md:text-left md:text-4xl md:mb-10">
-              {t("developer_title")}, <br />
-              <StaticTextWithAnimation
-                staticText={t("type_animation.1")}
-                sequence={[
-                  t("type_animation.1"),
-                  2000,
-                  t("type_animation.2"),
-                  2000,
-                  t("type_animation.3"),
-                  2000,
-                  t("type_animation.4"),
-                  10000,
-                ]}
-                className="text-secondary-ceo-500 font-bold w-full"
-              />
+        <section className="admin-status-grid grid gap-6 md:grid-cols-3" aria-labelledby="admin-status-title">
+          <div className="md:col-span-3 text-left">
+            <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t("status.badge")}</p>
+            <h2 id="admin-status-title" className="text-2xl font-semibold text-foreground">
+              {t("status.title")}
             </h2>
+            <p className="text-muted-foreground">{t("status.description")}</p>
+          </div>
+          {adminSurfaces.map((surface) => (
+            <Card key={surface.id} className="admin-card border-border/30 bg-card/40 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between text-foreground">
+                  <span>{t(`status.items.${surface.id}.label`)}</span>
+                  <span className="text-xs font-normal text-muted-foreground">{surface.endpoint}</span>
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  {t(`status.items.${surface.id}.detail`)}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <span className="rounded-full bg-primary/30 px-3 py-1 text-xs uppercase tracking-[0.3em] text-primary-foreground">
+                  {t(`status.states.${surface.state}`)}
+                </span>
+                <span className="text-xs text-muted-foreground">{t("status.realtime")}</span>
+              </CardContent>
+            </Card>
+          ))}
+        </section>
 
-            <p
-              tabIndex={0}
-              className="mx-auto mb-2 text-md md:text-xl lg:text-3xl font-bold md:mx-0 md:mb-8"
-            >
-              {t("description")}
-            </p>
-          </article>
-        </div>
-      </section>
+        <section className="admin-diagnostics grid gap-4 md:grid-cols-2" aria-labelledby="admin-diagnostics-title">
+          <div className="md:col-span-2 text-left">
+            <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t("diagnostics.badge")}</p>
+            <h2 id="admin-diagnostics-title" className="text-2xl font-semibold text-foreground">
+              {t("diagnostics.title")}
+            </h2>
+            <p className="text-muted-foreground">{t("diagnostics.description")}</p>
+          </div>
+          {DIAGNOSTIC_ITEMS.map((item) => (
+            <Card key={item} className="admin-diagnostic border-border/20 bg-card/30 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t(`diagnostics.items.${item}.title`)}</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  {t(`diagnostics.items.${item}.description`)}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between text-sm text-foreground/90">
+                <span>{t(`diagnostics.items.${item}.status`)}</span>
+                <span className="h-2 w-2 rounded-full bg-emerald-400" aria-label="ok" />
+              </CardContent>
+            </Card>
+          ))}
+        </section>
+
+        <section className="admin-actions space-y-6" aria-labelledby="admin-actions-title">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t("actions.badge")}</p>
+            <h2 id="admin-actions-title" className="text-2xl font-semibold text-foreground">
+              {t("actions.title")}
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {QUICK_LINKS.map((link) => (
+              <Link
+                key={link.key}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noreferrer" : undefined}
+                className="admin-action-link rounded-full border border-border/60 px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground"
+              >
+                {t(`actions.links.${link.key}`)}
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

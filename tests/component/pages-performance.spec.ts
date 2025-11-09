@@ -1,23 +1,24 @@
 import { test, expect } from "@playwright/test";
 import { getUrl } from "../utils/url";
 
-test.describe("Admin gradient background", () => {
-  test("has animated gradient container", async ({ page }) => {
+test.describe("Admin theming", () => {
+  test("renders a static glow background", async ({ page }) => {
     await page.goto(getUrl());
-    const gradient = page.locator(".admin-gradient");
-    await expect(gradient).toBeVisible();
+    const glow = page.locator(".admin-shell__glow");
+    await expect(glow).toBeVisible();
   });
 
-  test("theme selector switches to a preset class", async ({ page }) => {
+  test("theme selector syncs the html data attribute", async ({ page }) => {
     await page.goto(getUrl());
-    const toggle = page.getByRole("button", { name: /toggle theme/i });
+    const toggle = page.getByRole("button", { name: /customize theme/i });
 
     await toggle.click();
-    await page.getByText("Sunset shift").click();
-    await page.waitForFunction(() => document.documentElement.classList.contains("sunset"));
+    await page.getByRole("button", { name: /^soft$/i }).click();
+    await page.waitForFunction(() => document.documentElement.getAttribute("data-theme") === "dark-soft");
 
     await toggle.click();
-    await page.getByText("Emerald ops").click();
-    await page.waitForFunction(() => document.documentElement.classList.contains("emerald"));
+    await page.getByRole("button", { name: /^light$/i }).click();
+    await page.getByRole("button", { name: /^grays$/i }).click();
+    await page.waitForFunction(() => document.documentElement.getAttribute("data-theme") === "light-grays");
   });
 });

@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   },
   // Performance optimizations
   experimental: {
-    optimizePackageImports: ['react-icons', 'lucide-react', '@tsparticles/react'], // Reduce bundle size
+    optimizePackageImports: ['lucide-react'],
   },
   // Enable compression
   compress: true,

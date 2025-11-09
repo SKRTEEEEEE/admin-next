@@ -28,8 +28,13 @@ Hola droid, fijate en mi carpeta/proyecto en ./admin-next, si te fijas este es u
 ## Key points
 - Cambia toda referencia a ceo, ya que esto se refería a antiguos componentes del apartado 'profile', el cual ahora sera otro micro-frontend -> cambia toda referencia de 'ceo' a 'admin', si acaso, aunque es redundante ya que ahora es un micro-frontend
 - Recuerda que hay muchos test/código, heredado de la copia que hemos hecho de ./profile-page, recuerda eliminar estas partes
-- [x] Crear un template funcional, con Next, Shadcn/ui, Github Actions (actuales), i18n, next-themes(6 tipos), fondos gradients variables, SEO focus
-- [x] Asegurarte de que los test pasen y de que haya como mínimo un test de ejemplo en cada carpeta.
-- [x] Intentar mantener el mínimo de librerías para este ejemplo (preguntar las librerías que vas a eliminar)
+- Para el navbar, has de inspirar-te en ./agora-next o ./profile-page(el apartado de /admin y /academia)
+- Para los seis tipos de estilos(next-themes), has de inspirar-te en ./agora-next o ./profile-page(el apartado de /admin y /academia)
+- Tienes un servidor levantado en modo dev, en el puerto :3000
+- [ ] Crear un template funcional, con Next, Shadcn/ui, Github Actions (actuales), i18n, next-themes(6 tipos), SEO focus, fondos gradients variables(no obligatorio)
+- [ ] Asegurarte de que los test pasen y de que haya como mínimo un test de ejemplo en cada carpeta.
+- [ ] Intentar mantener el mínimo de librerías para este ejemplo (preguntar las librerías que vas a eliminar)
+- [ ] Asegura-te de tener el mismo Navbar que en ./agora-next (pero sin la funcionalidad de iniciar sesión, por ahora)
+- [ ] Asegura-te de tener los mismos estilos(next-themes), que ./agora-next
 - [x] Optimizar el AGENTS.md 'de cero' para este template
 - [x] Optimizar el README.md 'de cero' para este template

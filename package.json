@@ -41,7 +41,7 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@eslint/eslintrc": "^3",
     "@lhci/cli": "^0.15.1",
-    "@playwright/test": "^1.55.1",
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24",
     "@types/react": "19.2.2",

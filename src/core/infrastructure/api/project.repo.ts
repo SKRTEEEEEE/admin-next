@@ -2,46 +2,34 @@ import {
   Project,
   ProjectInterface,
 } from "@/core/application/interface/project.interface";
-import { ApiBaseRepository } from "./base.repo";
-import { ResFlow } from "@/core/domain/flows/res.type";
+import { ResFlow } from "@log-ui/core/domain/flows/res.type";
+import { ApiBaseRepository, Modules } from "@log-ui/core/infrastructure/api/base.repository";
 
 export class ProjectApiRepository
   extends ApiBaseRepository
   implements ProjectInterface
 {
-  constructor(baseUrl: string) {
-    super(baseUrl);
+  constructor(baseUrl?: string) {
+    super(Modules.PROJECTS, baseUrl);
   }
 
-  protected defineEndpoints(): {
-    [key: string]: { method: "GET" | "POST" | "PUT" | "DELETE"; url: string };
-  } {
-    return {
-      getProjectEjemplo: {
-        method: "GET",
-        url: "project",
-      } as const,
-      getProjectById: {
-        method: "GET",
-        url: "project/:id",
-      } as const,
-    };
-  }
-
-  readEjemplo(): Promise<ResFlow<Project[]>> {
-    return this.request<ResFlow<Project[]>>("getProjectEjemplo", {
+  async readEjemplo(): Promise<ResFlow<Project[]>> {
+    const endpoint = this.getEndpointModule("list") || `${this.baseUrl}/project`;
+    const response = await fetch(endpoint, {
+      method: "GET",
       headers: { "Content-type": "application/json" },
     });
+    return response.json();
   }
 
-  readById(id: string): Promise<ResFlow<Project>> {
-    return this.request<ResFlow<Project>>(
-      "getProjectById",
-      {
-        headers: { "Content-type": "application/json" },
-      },
-      { id: id }
-    );
+  async readById(id: string): Promise<ResFlow<Project>> {
+    const endpointResult = this.getDynamicEndpointModule("readById", id);
+    const endpoint = Array.isArray(endpointResult) ? endpointResult[0] : (endpointResult || `${this.baseUrl}/project/${id}`);
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: { "Content-type": "application/json" },
+    });
+    return response.json();
   }
 }
 

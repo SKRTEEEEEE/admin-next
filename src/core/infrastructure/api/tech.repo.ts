@@ -1,38 +1,56 @@
-import { ResFlow } from "@/core/domain/flows/res.type";
-import { ApiBaseRepository } from "./base.repo";
+import { ResFlow } from "@log-ui/core/domain/flows/res.type";
+import { ApiBaseRepository, Modules } from "@log-ui/core/infrastructure/api/base.repository";
 
-import { ReadAllParams } from "@/core/domain/entities/tech.type";
+import { ReadAllParams } from "@log-ui/core/domain/entities/tech.type";
 import type { Lib, ReadAllFlattenTechsRes, ReadCategoryTechsRes, TechInterface } from "@/core/application/interface/tech.interface";
-import { FullTechData } from "@/core/domain/entities/tech";
+import { FullTechData } from "@log-ui/core/domain/entities/tech";
 // src/core/infrastructure/api/tech.repository(-or->service).ts
 export class TechApiRepository
   extends ApiBaseRepository
   implements TechInterface
 {
-  constructor(baseUrl: string) {
-    super(baseUrl);
+  constructor(baseUrl?: string) {
+    super(Modules.TECH, baseUrl);
   }
 
-  protected defineEndpoints() {
-    return {
-      getTech: { method: "GET", url: "tech/:type" },
-    } as const;
+  async readDb(): Promise<ResFlow<Lib[]>> {
+    const endpointResult = this.getDynamicEndpointModule("readAll", ReadAllParams.Db);
+    const endpoint = Array.isArray(endpointResult) ? endpointResult[0] : (endpointResult || `${this.baseUrl}/tech/${ReadAllParams.Db}`);
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: { "Content-type": "application/json" },
+    });
+    return response.json();
   }
 
-  readDb(): Promise<ResFlow<Lib[]>> {
-    return this.request<ResFlow<Lib[]>>("getTech", { headers: { "Content-type": "application/json" } }, { type: ReadAllParams.Db });
+  async readFlatten(): Promise<ResFlow<FullTechData[]>> {
+    const endpointResult = this.getDynamicEndpointModule("readAll", ReadAllParams.Flatten);
+    const endpoint = Array.isArray(endpointResult) ? endpointResult[0] : (endpointResult || `${this.baseUrl}/tech/${ReadAllParams.Flatten}`);
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: { "Content-type": "application/json" },
+    });
+    return response.json();
   }
 
-  readFlatten(): Promise<ResFlow<FullTechData[]>> {
-    return this.request<ResFlow<FullTechData[]>>("getTech", { headers: { "Content-type": "application/json" } }, { type: ReadAllParams.Flatten });
+  async readCategory(): Promise<ResFlow<ReadCategoryTechsRes>> {
+    const endpointResult = this.getDynamicEndpointModule("readAll", ReadAllParams.Category);
+    const endpoint = Array.isArray(endpointResult) ? endpointResult[0] : (endpointResult || `${this.baseUrl}/tech/${ReadAllParams.Category}`);
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: { "Content-type": "application/json" },
+    });
+    return response.json();
   }
 
-  readCategory(): Promise<ResFlow<ReadCategoryTechsRes>> {
-    return this.request<ResFlow<ReadCategoryTechsRes>>("getTech", { headers: { "Content-type": "application/json" } }, { type: ReadAllParams.Category });
-  }
-
-  readFull(): Promise<ResFlow<ReadAllFlattenTechsRes>> {
-    return this.request<ResFlow<ReadAllFlattenTechsRes>>("getTech", { headers: { "Content-type": "application/json" } }, { type: ReadAllParams.Full });
+  async readFull(): Promise<ResFlow<ReadAllFlattenTechsRes>> {
+    const endpointResult = this.getDynamicEndpointModule("readAll", ReadAllParams.Full);
+    const endpoint = Array.isArray(endpointResult) ? endpointResult[0] : (endpointResult || `${this.baseUrl}/tech/${ReadAllParams.Full}`);
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: { "Content-type": "application/json" },
+    });
+    return response.json();
   }
 }
 

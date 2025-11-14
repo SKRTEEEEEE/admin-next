@@ -1,250 +1,216 @@
 name: 👁️‍🗨️ Playwright Tests
 on:
   pull_request:
-    branches: [ main, master, buildn ]
-  push:
-    branches: [ main ]
-
+    branches: [ main, master ]
 jobs:
-  test:
-    timeout-minutes: 30
+  unit-tests:
+    name: Unit Tests (No Server)
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
-    # Checkout con fetch-depth completo para git operations
     - uses: actions/checkout@v5
-      with:
-        submodules: true
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Reset CI artifacts 🧹
+    - name: Reset unit artifacts 🧹
       run: |
-        rm -rf docs/test-results docs/coverage .nyc_output || true
-        mkdir -p docs/test-results docs/coverage
-
-    # Setup Node.js con caché para dependencias
+        rm -rf docs/test-results docs/coverage docs/coverage-reports .nyc_output || true
+        mkdir -p docs/test-results docs/coverage docs/coverage-reports
     - uses: actions/setup-node@v6
       with:
         node-version: lts/*
-        cache: 'npm'
-
-    # Install dependencies (usa caché si está disponible)
     - name: Install dependencies
       run: npm ci
-
-    # Caché de Playwright browsers
-    - name: Get Playwright version
-      id: playwright-version
-      run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")" >> $GITHUB_OUTPUT
-
-    - name: Cache Playwright browsers
-      uses: actions/cache@v4
-      id: playwright-cache
-      with:
-        path: ~/.cache/ms-playwright
-        key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.PLAYWRIGHT_VERSION }}
-
     - name: Install Playwright Browsers
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: npx playwright install --with-deps
-
-    - name: Install Playwright dependencies only
-      if: steps.playwright-cache.outputs.cache-hit == 'true'
-      run: npx playwright install-deps
-
-    # Build Next.js con Turbopack (más rápido)
-    - name: Build Next.js
-      run: npm run build
-      env:
-        NODE_ENV: production
-
-    # Start Next.js server en background
-    - name: Start Next.js server
+    - name: Run unit tests with coverage
+      run: npm run test:coverage:unit
+    - name: Prepare unit coverage report
       run: |
-        npm run start &
-        echo $! > .next-server.pid
+        rm -rf docs/coverage-reports/unit
+        mkdir -p docs/coverage-reports/unit
+        cp -R docs/coverage/. docs/coverage-reports/unit/
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: coverage-unit
+        path: docs/coverage-reports/unit/
+        retention-days: 30
+    - name: Archive unit NYC output
+      if: always()
+      run: |
+        if [ -d .nyc_output ]; then
+          tar -czf nyc-output-unit.tgz .nyc_output
+        fi
+    - uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: nyc-output-unit
+        path: nyc-output-unit.tgz
+        retention-days: 7
+
+  integration-e2e-tests:
+    name: Integration & E2E Tests (With Server)
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+    - uses: actions/checkout@v5
+    - name: Reset integration/e2e artifacts 🧹
+      run: |
+        rm -rf docs/test-results docs/coverage docs/coverage-reports .nyc_output || true
+        mkdir -p docs/test-results docs/coverage docs/coverage-reports
+    - uses: actions/setup-node@v6
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Build project
+      run: npm run build
+    - name: Prepare standalone server
+      run: |
+        # Copy static files to standalone directory
+        cp -r public .next/standalone/public || true
+        cp -r .next/static .next/standalone/.next/static || true
+    - name: Start Next.js standalone server
+      run: |
+        cd .next/standalone
+        node server.js &
+        echo $! > server.pid
+        cd ../..
       env:
         NODE_ENV: production
         NEXT_PUBLIC_API_MOCKING: "enabled"
         PORT: 3000
-    
-    # Wait for server con verificación de rutas
+        HOSTNAME: "0.0.0.0"
     - name: Wait for server to be ready
       run: |
-        npx wait-on http://localhost:3000 --timeout 90000
-        for LOCALE in en es ca de; do
-          npx wait-on "http://localhost:3000/$LOCALE" --timeout 30000
-        done
-        for LOCALE in en es ca de; do
-          npx wait-on "http://localhost:3000/$LOCALE/gradients" --timeout 30000 || true
-        done
-        sleep 5
-        curl -f http://localhost:3000/es || exit 1
-
-    # Run Playwright tests con coverage
-    - name: Run Playwright tests
-      run: npm run test:coverage
-      continue-on-error: false
-      env:
-        CI: true
-
-    - name: Ensure coverage summary
-      if: always()
-      run: npx nyc report --reporter=json-summary --report-dir=docs/coverage
-
-    # Parse coverage results
-    - name: Parse coverage data
-      id: coverage
-      if: always()
-      run: |
-        SUMMARY_PATH="./docs/coverage/coverage-summary.json"
-        if [ -f "$SUMMARY_PATH" ]; then
-          STATEMENTS=$(node -e "console.log(require('${SUMMARY_PATH}').total.statements.pct)")
-          BRANCHES=$(node -e "console.log(require('${SUMMARY_PATH}').total.branches.pct)")
-          FUNCTIONS=$(node -e "console.log(require('${SUMMARY_PATH}').total.functions.pct)")
-          LINES=$(node -e "console.log(require('${SUMMARY_PATH}').total.lines.pct)")
+        echo "⏳ Waiting for Next.js to be ready..."
+        
+        # Función para verificar si el servidor responde correctamente
+        check_server() {
+          local url=$1
+          local response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null)
+          echo $response
+        }
+        
+        # Esperar a que el servidor responda (acepta 200, 307, 404)
+        # 307 = redirect (expected con next-intl), 404 = server ready pero ruta no encontrada
+        MAX_ATTEMPTS=60
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+          STATUS=$(check_server "http://localhost:3000/en")
           
-          echo "statements=$STATEMENTS" >> $GITHUB_OUTPUT
-          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
-          echo "functions=$FUNCTIONS" >> $GITHUB_OUTPUT
-          echo "lines=$LINES" >> $GITHUB_OUTPUT
-          
-          echo "Coverage: Statements $STATEMENTS% | Branches $BRANCHES% | Functions $FUNCTIONS% | Lines $LINES%"
-        else
-          echo "Coverage file not found"
-          echo "statements=0" >> $GITHUB_OUTPUT
-          echo "branches=0" >> $GITHUB_OUTPUT
-          echo "functions=0" >> $GITHUB_OUTPUT
-          echo "lines=0" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Create coverage badges 🏅
-      if: github.ref == 'refs/heads/main' && steps.coverage.outputs.statements != '0'
-      run: |
-        mkdir -p .github/badges
-
-        get_color() {
-          local value=$(echo "$1" | awk '{printf "%.0f", $1}')
-          if [ "$value" -ge 80 ]; then
-            echo "brightgreen"
-          elif [ "$value" -ge 40 ]; then
-            echo "orange"
-          elif [ "$value" -ge 10 ]; then
-            echo "darkorange"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "404" ]; then
+            echo "✅ Server is ready (status: $STATUS) on attempt $i"
+            break
+          elif [ "$STATUS" = "500" ]; then
+            echo "⚠️ Server responding but with 500 error (attempt $i/$MAX_ATTEMPTS)"
+            if [ $i -ge 10 ]; then
+              echo "❌ Server keeps returning 500 errors. Check your app code!"
+              exit 1
+            fi
           else
-            echo "red"
+            echo "⏳ Waiting for server... (attempt $i/$MAX_ATTEMPTS, status: $STATUS)"
           fi
-        }
-
-        STATEMENTS_COLOR=$(get_color "${{ steps.coverage.outputs.statements }}")
-        BRANCHES_COLOR=$(get_color "${{ steps.coverage.outputs.branches }}")
-        FUNCTIONS_COLOR=$(get_color "${{ steps.coverage.outputs.functions }}")
-        LINES_COLOR=$(get_color "${{ steps.coverage.outputs.lines }}")
-
-        cat > .github/badges/coverage-statements.json << EOF
-        {
-          "schemaVersion": 1,
-          "label": "Statements",
-          "message": "${{ steps.coverage.outputs.statements }}%",
-          "color": "${STATEMENTS_COLOR}",
-          "style": "flat-square"
-        }
-        EOF
-
-        cat > .github/badges/coverage-branches.json << EOF
-        {
-          "schemaVersion": 1,
-          "label": "Branches",
-          "message": "${{ steps.coverage.outputs.branches }}%",
-          "color": "${BRANCHES_COLOR}",
-          "style": "flat-square"
-        }
-        EOF
-
-        cat > .github/badges/coverage-functions.json << EOF
-        {
-          "schemaVersion": 1,
-          "label": "Functions",
-          "message": "${{ steps.coverage.outputs.functions }}%",
-          "color": "${FUNCTIONS_COLOR}",
-          "style": "flat-square"
-        }
-        EOF
-
-        cat > .github/badges/coverage-lines.json << EOF
-        {
-          "schemaVersion": 1,
-          "label": "Lines",
-          "message": "${{ steps.coverage.outputs.lines }}%",
-          "color": "${LINES_COLOR}",
-          "style": "flat-square"
-        }
-        EOF
-
-    - name: Commit coverage badges
-      if: github.ref == 'refs/heads/main' && steps.coverage.outputs.statements != '0'
+          
+          sleep 2
+          
+          if [ $i -eq $MAX_ATTEMPTS ]; then
+            echo "❌ Server failed to start properly after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
+        done
+        
+        echo "🎉 Server is ready for testing!"
+    - name: Run integration tests with coverage
+      run: npm run test:coverage:integration
+    - name: Prepare integration coverage report
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add .github/badges/*.json
-        git diff --staged --quiet || git commit -m "chore: update coverage badges [skip ci]"
-        git push
-
-    # README already points to shields endpoints; no automatic edits needed
-
-    # Upload test report
+        rm -rf docs/coverage-reports/integration
+        mkdir -p docs/coverage-reports/integration
+        cp -R docs/coverage/. docs/coverage-reports/integration/
+        rm -rf docs/coverage .nyc_output
+    - name: Run E2E tests with coverage
+      run: npm run test:coverage:e2e
+    - name: Prepare E2E coverage report
+      run: |
+        rm -rf docs/coverage-reports/e2e
+        mkdir -p docs/coverage-reports/e2e
+        cp -R docs/coverage/. docs/coverage-reports/e2e/
+        rm -rf docs/coverage .nyc_output
     - uses: actions/upload-artifact@v5
-      if: always()
+      if: ${{ !cancelled() }}
       with:
         name: playwright-report
         path: docs/test-results/
         retention-days: 30
-    
-    # Upload coverage report
     - uses: actions/upload-artifact@v5
       if: always()
       with:
-        name: coverage-report
-        path: docs/coverage/
+        name: coverage-integration
+        path: docs/coverage-reports/integration/
         retention-days: 30
-
-    - name: Stop Next.js server ⛔
+    - uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: coverage-e2e
+        path: docs/coverage-reports/e2e/
+        retention-days: 30
+    - name: Stop standalone server ⛔
       if: always()
       run: |
-        if [ -f .next-server.pid ]; then
-          kill $(cat .next-server.pid) || true
-          rm -f .next-server.pid
+        if [ -f .next/standalone/server.pid ]; then
+          kill $(cat .next/standalone/server.pid) || true
+          rm -f .next/standalone/server.pid
         fi
-    
-    # Comment PR con resultados
-    - name: Comment PR with coverage
-      if: github.event_name == 'pull_request' && steps.coverage.outputs.statements != '0'
-      uses: actions/github-script@v7
+
+  update-coverage-badges:
+    name: Update Coverage Badges
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-e2e-tests]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v5
       with:
-        script: |
-          const statements = '${{ steps.coverage.outputs.statements }}';
-          const branches = '${{ steps.coverage.outputs.branches }}';
-          const functions = '${{ steps.coverage.outputs.functions }}';
-          const lines = '${{ steps.coverage.outputs.lines }}';
-          
-          const body = `## 📊 Test Coverage Results
-          
-          | Metric | Coverage |
-          |--------|----------|
-          | **Statements** | ${statements}% |
-          | **Branches** | ${branches}% |
-          | **Functions** | ${functions}% |
-          | **Lines** | ${lines}% |
-          
-          [View full report in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          `;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: body
-          });
+        ref: ${{ github.head_ref }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Reset coverage doc folders 🧹
+      run: |
+        rm -rf docs/coverage-reports || true
+        mkdir -p docs/coverage-reports
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Download unit coverage
+      uses: actions/download-artifact@v6
+      continue-on-error: true
+      with:
+        name: coverage-unit
+        path: docs/coverage-reports/unit/
+    - name: Download integration coverage
+      uses: actions/download-artifact@v6
+      continue-on-error: true
+      with:
+        name: coverage-integration
+        path: docs/coverage-reports/integration/
+    - name: Download e2e coverage
+      uses: actions/download-artifact@v6
+      continue-on-error: true
+      with:
+        name: coverage-e2e
+        path: docs/coverage-reports/e2e/
+    - name: Update README with coverage badges
+      run: node .github/scripts/update-coverage-badges.js
+    - name: Commit coverage badges
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add README.md
+        git diff --staged --quiet || git commit -m "docs: update test coverage badges [skip ci]"
+    - name: Push changes
+      run: git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

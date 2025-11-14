@@ -7,4 +7,7 @@ npx tsc --noEmit
 echo "📊 Checking test coverage (minimum 80%)..."
 npm run test:coverage:unit
 
+echo "⚡ Checking performance thresholds (90/95/90/95)..."
+npm run perf:check
+
 echo "✅ All pre-commit checks passed!"

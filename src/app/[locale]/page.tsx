@@ -17,12 +17,13 @@ const QUICK_LINKS = [
 ];
 
 interface AdminHomeProps {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 export default async function AdminHome({ params }: AdminHomeProps) {
+  const { locale } = await params;
   const t = await getTranslations("admin");
-  const projects = await fetchLandingProjects(params?.locale);
+  const projects = await fetchLandingProjects(locale);
 
   return (
     <main className="admin-shell relative isolate min-h-dvh overflow-hidden bg-background text-foreground">

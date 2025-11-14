@@ -1,3 +1,3 @@
-[submodule "src/core/domain"]
-	path = src/core/domain
-	url = https://github.com/SKRTEEEEEE/profile-domain.git
+[submodule "log-ui-ts"]
+	path = log-ui-ts
+	url = https://github.com/SKRTEEEEEE/log-ui-ts.git

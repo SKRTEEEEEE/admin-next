@@ -11,14 +11,33 @@
       "numberOfRuns": 1,
       "startServerCommand": "npm run build && npm run start",
       "startServerReadyPattern": "ready on.*3000",
-      "chromeFlags": "--headless"
+      "chromeFlags": "--headless",
+      "budgetsFile": "./lighthouse.budget.json"
     },
     "assert": {
+      "preset": "lighthouse:recommended",
       "assertions": {
-        "categories:performance": ["error", { "minScore": 0.65 }],
-        "categories:accessibility": ["error", { "minScore": 0.85 }],
-        "categories:seo": ["error", { "minScore": 0.8 }],
-        "categories:best-practices": ["error", { "minScore": 0.9 }],
+        "categories:performance": ["error", { "minScore": 0.9 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:seo": ["error", { "minScore": 0.9 }],
+        "categories:best-practices": ["error", { "minScore": 0.95 }],
+
+        "first-contentful-paint": ["error", { "maxNumericValue": 1800 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+        "speed-index": ["error", { "maxNumericValue": 3000 }],
+        
+        "interactive": ["warn", { "maxNumericValue": 3800 }],
+        "max-potential-fid": ["warn", { "maxNumericValue": 100 }],
+        
+        "uses-optimized-images": "error",
+        "modern-image-formats": "error",
+        "offscreen-images": "warn",
+        "render-blocking-resources": "warn",
+        "unused-javascript": "warn",
+        "unused-css-rules": "warn",
+        "server-response-time": ["error", { "maxNumericValue": 600 }],
 
         "bf-cache": "off",
         "legacy-javascript-insight": "warn",

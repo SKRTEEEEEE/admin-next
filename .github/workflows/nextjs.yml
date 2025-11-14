@@ -13,7 +13,7 @@ jobs:
       - name: Checkout 🛬
         uses: actions/checkout@v5
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Cache node_modules 🧠
         id: cache-node_modules

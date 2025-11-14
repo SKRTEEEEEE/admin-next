@@ -60,6 +60,15 @@ export default defineConfig({
         baseURL: 'http://localhost:3000',
       },
     },
+    {
+      name: 'performance',
+      testMatch: /tests\/performance\/.*\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://localhost:3000',
+      },
+      timeout: 90000, // Performance tests need more time (90s)
+    },
   ],
   
   use: {

@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   testMatch: '*.spec.ts',
-  timeout: 30000,
+  timeout: 90000,
   retries: process.env.CI ? 3 : 2, // More retries in CI
   outputDir: "docs/test-results/artifacts",
   

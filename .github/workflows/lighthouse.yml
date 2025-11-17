@@ -2,7 +2,7 @@ name: Lighthouse Performance
 
 on:
   pull_request:
-    branches: [main, 11-second-template]
+    branches: [main,master, buildn, 11-second-template]
   push:
     branches: [main, 11-second-template]
   workflow_dispatch:
@@ -35,7 +35,6 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          NEXT_PUBLIC_THIRDWEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_THIRDWEB_CLIENT_ID }}
 
       # Verificar estructura del build
       - name: Verify build output
@@ -83,7 +82,6 @@ jobs:
         env:
           NODE_ENV: production
           NEXT_PUBLIC_API_MOCKING: "enabled"
-          NEXT_PUBLIC_THIRDWEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_THIRDWEB_CLIENT_ID }}
           PORT: 3000
           HOSTNAME: "0.0.0.0"
 
@@ -106,7 +104,6 @@ jobs:
         env:
           NODE_ENV: production
           NEXT_PUBLIC_API_MOCKING: "enabled"
-          NEXT_PUBLIC_THIRDWEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_THIRDWEB_CLIENT_ID }}
           PORT: 3000
       
       # Wait for server con verificación REAL de que funciona
@@ -121,14 +118,13 @@ jobs:
             echo $response
           }
           
-          # Esperar a que el servidor responda (acepta 200, 307, 404)
-          # 307 = redirect (expected con next-intl), 404 = server ready pero ruta no encontrada
+          # Esperar a que el servidor responda con 200 OK (no 500!)
           MAX_ATTEMPTS=60
           for i in $(seq 1 $MAX_ATTEMPTS); do
-            STATUS=$(check_server "http://localhost:3000/en")
+            STATUS=$(check_server "http://localhost:3000")
             
-            if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "404" ]; then
-              echo "✅ Server is ready (status: $STATUS) on attempt $i"
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Server responded with 200 OK on attempt $i"
               break
             elif [ "$STATUS" = "500" ]; then
               echo "⚠️ Server responding but with 500 error (attempt $i/$MAX_ATTEMPTS)"

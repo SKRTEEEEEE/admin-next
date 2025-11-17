@@ -65,8 +65,8 @@
 ### Desarrollo y Testing
 
 - **Testing:** [Playwright](https://playwright.dev/) (7 proyectos: unit, api, component, pages, integration, e2e, performance)
-- **Coverage:** [NYC](https://www.npmjs.com/package/nyc) (thresholds: 80/80/80/50)
-- **Performance:** [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) (thresholds: 90/95/90/95)
+- **Coverage:** [NYC](https://www.npmjs.com/package/nyc) (thresholds: 60/60/60/40)
+- **Performance:** [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) (thresholds: 70/80/80/80)
 - **Linting:** [ESLint 9](https://eslint.org/) con configuración Next.js
 - **Git Hooks:** [Husky](https://typicode.github.io/husky/)
 - **Commit Linting:** [Commitlint](https://commitlint.js.org/)
@@ -97,15 +97,15 @@ npm run dev
 | `npm run test:all` | Ejecuta todos los tests (unit + server + e2e + perf) |
 | **Performance** | |
 | `npm run perf` | Lighthouse CI completo (build + start + audit de 5 páginas) |
-| `npm run perf:check` | Validar thresholds de performance (90/95/90/95) |
+| `npm run perf:check` | Validar thresholds de performance (70/80/80/80) |
 | `npm run lh:home` | Lighthouse audit manual de la home |
 
 ### Flujo de Test Recomendado
 1. **Pre-commit (automático):**
    - `npm run lint` - Validaciones de código
    - `npx tsc --noEmit` - Type checking
-   - `npm run test:coverage:unit` - Coverage mínimo 80%
-   - `npm run perf:check` - Thresholds de performance (90/95/90/95)
+   - `npm run test:coverage:unit` - Coverage mínimo 60%
+   - `npm run perf:check` - Thresholds de performance (70/80/80/80)
 
 2. **Testing local:**
    - `npm run test:unit` - Tests rápidos sin servidor

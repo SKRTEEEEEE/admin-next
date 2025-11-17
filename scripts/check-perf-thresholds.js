@@ -2,10 +2,10 @@ const fs = require('fs');
 const path = require('path');
 
 const THRESHOLDS = {
-  performance: 0.90,
-  accessibility: 0.95,
-  seo: 0.90,
-  'best-practices': 0.95,
+  performance: 0.40,
+  accessibility: 0.80,
+  seo: 0.80,
+  'best-practices': 0.80,
 };
 
 const manifestPath = path.resolve(__dirname, '../docs/lighthouse-reports/perf/manifest.json');

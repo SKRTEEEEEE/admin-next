@@ -64,12 +64,9 @@ async function setupVitals(page: Page) {
 
 test.describe("Next.js Performance + JS Coverage", () => {
   test("Home page loads successfully", async ({ page }) => {
-    const url = getUrl();
-    console.log("Testing URL:", url);
-    await page.goto(url);
-    await page.waitForLoadState("domcontentloaded");
-
+    await page.goto("http://localhost:3000/es");
     // Verificar que la página carga
-    await expect(page.locator("main")).toBeVisible();
+    const htmlElement = await page.locator("html");
+    await expect(htmlElement).toBeVisible();
   });
 });

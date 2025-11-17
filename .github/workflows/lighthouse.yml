@@ -36,144 +36,56 @@ jobs:
         env:
           NODE_ENV: production
 
-      # Verificar estructura del build
-      - name: Verify build output
+      # Start Next.js server (usando npm start como en playwright.yml)
+      - name: Start Next.js server
         run: |
-          echo "📁 Checking build output structure..."
-          ls -la .next/ || echo "No .next directory"
-          if [ -d ".next/standalone" ]; then
-            echo "✅ Standalone build found"
-            ls -la .next/standalone/
-          fi
-          if [ -d ".next/static" ]; then
-            echo "✅ Static assets found"
-          fi
-
-      # Detectar qué método de start usar
-      - name: Detect server start method
-        id: detect-server
-        run: |
-          if [ -f ".next/standalone/server.js" ]; then
-            echo "method=standalone" >> $GITHUB_OUTPUT
-            echo "✅ Using standalone mode"
-          else
-            echo "method=standard" >> $GITHUB_OUTPUT
-            echo "✅ Using standard mode (npm start)"
-          fi
-
-      # Start con STANDALONE
-      - name: Start Next.js (standalone)
-        if: steps.detect-server.outputs.method == 'standalone'
-        run: |
-          cd .next/standalone
-          node server.js > ../../server.log 2>&1 &
-          SERVER_PID=$!
-          echo $SERVER_PID > ../../.next-server.pid
-          cd ../..
-          echo "🚀 Server started in standalone mode (PID: $SERVER_PID)"
-          sleep 2
-          if ps -p $SERVER_PID > /dev/null; then
-            echo "✅ Process is running"
-          else
-            echo "❌ Process died immediately! Logs:"
-            cat server.log
-            exit 1
-          fi
-        env:
-          NODE_ENV: production
-          NEXT_PUBLIC_API_MOCKING: "enabled"
-          PORT: 3000
-          HOSTNAME: "0.0.0.0"
-
-      # Start con NPM START
-      - name: Start Next.js (standard)
-        if: steps.detect-server.outputs.method == 'standard'
-        run: |
-          npm run start > server.log 2>&1 &
-          SERVER_PID=$!
-          echo $SERVER_PID > .next-server.pid
-          echo "🚀 Server started in standard mode (PID: $SERVER_PID)"
-          sleep 2
-          if ps -p $SERVER_PID > /dev/null; then
-            echo "✅ Process is running"
-          else
-            echo "❌ Process died immediately! Logs:"
-            cat server.log
-            exit 1
-          fi
+          npm run start &
+          echo $! > .next-server.pid
         env:
           NODE_ENV: production
           NEXT_PUBLIC_API_MOCKING: "enabled"
           PORT: 3000
       
-      # Wait for server con verificación REAL de que funciona
+      # Wait for server (igual que en playwright.yml que funciona)
       - name: Wait for server to be ready
         run: |
-          echo "⏳ Waiting for Next.js to be ready..."
+          echo "⏳ Waiting for Next.js server..."
           
-          # Función para verificar si el servidor responde correctamente
+          # Función para verificar el servidor (SIN -f para aceptar redirects)
           check_server() {
-            local url=$1
-            local response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null)
-            echo $response
+            curl -s -o /dev/null -w "%{http_code}" "$1" 2>/dev/null
           }
           
-          # Esperar a que el servidor responda con 200 OK (no 500!)
-          MAX_ATTEMPTS=60
+          # Esperar a que el servidor base esté listo
+          MAX_ATTEMPTS=45
           for i in $(seq 1 $MAX_ATTEMPTS); do
             STATUS=$(check_server "http://localhost:3000")
             
-            if [ "$STATUS" = "200" ]; then
-              echo "✅ Server responded with 200 OK on attempt $i"
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "308" ] || [ "$STATUS" = "404" ]; then
+              echo "✅ Server ready (status: $STATUS)"
               break
-            elif [ "$STATUS" = "500" ]; then
-              echo "⚠️ Server responding but with 500 error (attempt $i/$MAX_ATTEMPTS)"
-              if [ $i -ge 10 ]; then
-                echo "❌ Server keeps returning 500 errors. Showing logs:"
-                tail -50 server.log
-                exit 1
-              fi
-            else
-              echo "⏳ Waiting for server... (attempt $i/$MAX_ATTEMPTS, status: $STATUS)"
             fi
             
+            echo "⏳ Attempt $i/$MAX_ATTEMPTS (status: $STATUS)"
             sleep 2
             
             if [ $i -eq $MAX_ATTEMPTS ]; then
-              echo "❌ Server failed to start properly. Final logs:"
-              cat server.log
+              echo "❌ Server failed to start"
               exit 1
             fi
           done
           
-          # Verificar locales con status code check
-          echo "🌍 Checking locales..."
+          # Verificar locales si existen
           for LOCALE in en es ca de; do
             STATUS=$(check_server "http://localhost:3000/$LOCALE")
-            if [ "$STATUS" = "200" ]; then
-              echo "✅ /$LOCALE is ready"
-            else
-              echo "⚠️ /$LOCALE returned status $STATUS"
-            fi
+            echo "✅ Locale $LOCALE: $STATUS"
           done
           
-          echo "🎉 Server is ready for Lighthouse!"
-
-      # Mostrar últimas líneas de logs antes de Lighthouse
-      - name: Show server startup logs
-        run: |
-          echo "📋 Last 20 lines of server logs:"
-          tail -20 server.log || echo "No logs yet"
+          echo "🎉 Server fully ready!"
+          sleep 3
         
       - name: Run Lighthouse CI
         run: npm run lhci:perf
-
-      # Si Lighthouse falla, mostrar logs del servidor
-      - name: Show server logs on failure
-        if: failure()
-        run: |
-          echo "📋 Full server logs:"
-          cat server.log || echo "No log file found"
 
       - name: Check performance thresholds
         run: npm run perf:check

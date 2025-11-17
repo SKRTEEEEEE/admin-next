@@ -97,7 +97,7 @@ npm run dev
 | `npm run test:all` | Ejecuta todos los tests (unit + server + e2e + perf) |
 | **Performance** | |
 | `npm run perf` | Lighthouse CI completo (build + start + audit de 5 páginas) |
-| `npm run perf:check` | Validar thresholds de performance (70/80/80/80) |
+| `npm run perf:check` | Validar thresholds de performance (70/80/80/80) + **actualizar badges** |
 | `npm run lh:home` | Lighthouse audit manual de la home |
 
 ### Flujo de Test Recomendado
@@ -105,7 +105,7 @@ npm run dev
    - `npm run lint` - Validaciones de código
    - `npx tsc --noEmit` - Type checking
    - `npm run test:coverage:unit` - Coverage mínimo 60%
-   - `npm run perf:check` - Thresholds de performance (70/80/80/80)
+   - `npm run perf:check` - Thresholds de performance (70/80/80/80) + actualizar badges
 
 2. **Testing local:**
    - `npm run test:unit` - Tests rápidos sin servidor
@@ -115,6 +115,25 @@ npm run dev
 
 3. **Performance audit completo:**
    - `npm run perf` - Lighthouse CI (build + start + audit automático)
+   - `npm run perf:check` - Validar thresholds + actualizar badges automáticamente
+
+### Sistema de Badges de Lighthouse
+
+Los badges de Lighthouse en el README se actualizan **automáticamente** al ejecutar `npm run perf:check`:
+
+- 📊 **Performance** (`docs/badges/perf.json`) - Promedio de performance de todas las páginas auditadas
+- ♿ **Accessibility** (`docs/badges/acc.json`) - Promedio de accesibilidad
+- 🔍 **SEO** (`docs/badges/seo.json`) - Promedio de SEO
+- ✅ **Best Practices** (`docs/badges/bp.json`) - Promedio de mejores prácticas
+
+**Colores de badges:**
+- 🟢 `brightgreen` (90-100%) - Excelente
+- 🟢 `green` (80-89%) - Bueno
+- 🟡 `yellow` (60-79%) - Aceptable
+- 🟠 `orange` (40-59%) - Necesita mejoras
+- 🔴 `red` (<40%) - Crítico
+
+**Nota:** Para generar reportes de Lighthouse primero debes ejecutar `npm run perf`. Si no existen reportes, `perf:check` generará badges en estado "pending".
 
 > 📚 **Documentación completa de testing:** Ver [docs/TEST.md](docs/TEST.md) para guía detallada de todos los tipos de tests, configuración, thresholds y workflows.
 

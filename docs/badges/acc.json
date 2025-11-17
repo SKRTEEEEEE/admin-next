@@ -1,1 +1,6 @@
-{"schemaVersion": 1, "label": "accessibility", "message": "pending", "color": "lightgrey"}
+{
+  "schemaVersion": 1,
+  "label": "accessibility",
+  "message": "94%",
+  "color": "brightgreen"
+}

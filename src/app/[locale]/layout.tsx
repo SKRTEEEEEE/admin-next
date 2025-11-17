@@ -6,17 +6,16 @@ import { Inter as FontSans } from "next/font/google";
 import { routing } from "@/lib/i18n/routing";
 import { Toaster } from "@/components/ui/sonner";
 import { ReactNode } from "react";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@log-ui/components/theme-provider";
 import { 
   generateMetadata as generateSEOMetadata, 
-  personalInfo 
-} from "@/lib/seo/metadata";
-import { 
-  generatePersonSchema, 
-  generateWebSiteSchema 
-} from "@/lib/seo/schemas";
+  personalInfo,
+  generatePersonSchema,
+  generateWebSiteSchema
+} from "@/lib/seo";
 import { Metadata } from "next";
-import { Navbar } from "@/components/navigation/admin-navbar";
+import { SiteHeader } from "@log-ui/components/site-header/site-header";
+import { ThirdwebProvider } from "thirdweb/react";
 
 // Optimize font loading for better LCP
 const fontSans = FontSans({ 
@@ -103,24 +102,26 @@ export default async function LocaleLayout({
         />
       </head>
       <body className={cn("min-h-dvh bg-background font-sans antialiased", fontSans.variable)}>
-        <ThemeProvider
-          attribute="data-theme"
-          defaultTheme="dark-soft"
-          storageKey="admin-theme"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <NextIntlClientProvider messages={messages}>
-            <div
-              style={{ backgroundImage: randomGradient }}
-              className="min-h-dvh bg-cover bg-fixed bg-no-repeat"
-            >
-              <Navbar />
-              <Toaster position="bottom-right" />
-              {children}
-            </div>
-          </NextIntlClientProvider>
-        </ThemeProvider>
+        <ThirdwebProvider>
+          <ThemeProvider
+            attribute="data-theme"
+            defaultTheme="dark-soft"
+            storageKey="admin-theme"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <NextIntlClientProvider messages={messages}>
+              <div
+                style={{ backgroundImage: randomGradient }}
+                className="min-h-dvh bg-cover bg-fixed bg-no-repeat"
+              >
+                <SiteHeader />
+                <Toaster position="bottom-right" />
+                {children}
+              </div>
+            </NextIntlClientProvider>
+          </ThemeProvider>
+        </ThirdwebProvider>
       </body>
     </html>
   );

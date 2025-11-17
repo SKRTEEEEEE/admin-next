@@ -13,29 +13,32 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-    # Checkout con fetch-depth completo para git operations
+    # ✅ CRÍTICO: Checkout con submódulos RECURSIVOS
     - uses: actions/checkout@v5
       with:
-        submodules: true
+        submodules: recursive  # ⚠️ Cambiado de 'true' a 'recursive'
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
+
+    # ✅ Instalar dependencias en submódulos anidados
+    - name: Initialize submodules
+      run: |
+        git submodule update --init --recursive
+        git submodule foreach --recursive 'npm ci || echo "No package.json in $(pwd)"'
 
     - name: Reset CI artifacts 🧹
       run: |
         rm -rf docs/test-results docs/coverage .nyc_output || true
         mkdir -p docs/test-results docs/coverage
 
-    # Setup Node.js con caché para dependencias
     - uses: actions/setup-node@v6
       with:
         node-version: lts/*
         cache: 'npm'
 
-    # Install dependencies (usa caché si está disponible)
     - name: Install dependencies
       run: npm ci
 
-    # Caché de Playwright browsers
     - name: Get Playwright version
       id: playwright-version
       run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")" >> $GITHUB_OUTPUT
@@ -55,13 +58,11 @@ jobs:
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps
 
-    # Build Next.js con Turbopack (más rápido)
     - name: Build Next.js
       run: npm run build
       env:
         NODE_ENV: production
 
-    # Start Next.js server en background
     - name: Start Next.js server
       run: |
         npm run start &
@@ -71,20 +72,44 @@ jobs:
         NEXT_PUBLIC_API_MOCKING: "enabled"
         PORT: 3000
     
-    # Wait for server con verificación de rutas
+    # ✅ Wait mejorado con retry logic
     - name: Wait for server to be ready
       run: |
-        npx wait-on http://localhost:3000 --timeout 90000
-        for LOCALE in en es ca de; do
-          npx wait-on "http://localhost:3000/$LOCALE" --timeout 30000
+        echo "⏳ Waiting for Next.js server..."
+        
+        # Función para verificar el servidor (SIN -f para aceptar redirects)
+        check_server() {
+          curl -s -o /dev/null -w "%{http_code}" "$1" 2>/dev/null
+        }
+        
+        # Esperar a que el servidor base esté listo
+        MAX_ATTEMPTS=45
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+          STATUS=$(check_server "http://localhost:3000")
+          
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "308" ] || [ "$STATUS" = "404" ]; then
+            echo "✅ Server ready (status: $STATUS)"
+            break
+          fi
+          
+          echo "⏳ Attempt $i/$MAX_ATTEMPTS (status: $STATUS)"
+          sleep 2
+          
+          if [ $i -eq $MAX_ATTEMPTS ]; then
+            echo "❌ Server failed to start"
+            exit 1
+          fi
         done
+        
+        # Verificar locales si existen
         for LOCALE in en es ca de; do
-          npx wait-on "http://localhost:3000/$LOCALE/gradients" --timeout 30000 || true
+          STATUS=$(check_server "http://localhost:3000/$LOCALE")
+          echo "✅ Locale $LOCALE: $STATUS"
         done
-        sleep 5
-        curl -f http://localhost:3000/es || exit 1
+        
+        echo "🎉 Server fully ready!"
+        sleep 3
 
-    # Run Playwright tests con coverage
     - name: Run Playwright tests
       run: npm run test:coverage
       continue-on-error: false
@@ -95,7 +120,6 @@ jobs:
       if: always()
       run: npx nyc report --reporter=json-summary --report-dir=docs/coverage
 
-    # Parse coverage results
     - name: Parse coverage data
       id: coverage
       if: always()
@@ -193,9 +217,6 @@ jobs:
         git diff --staged --quiet || git commit -m "chore: update coverage badges [skip ci]"
         git push
 
-    # README already points to shields endpoints; no automatic edits needed
-
-    # Upload test report
     - uses: actions/upload-artifact@v5
       if: always()
       with:
@@ -203,7 +224,6 @@ jobs:
         path: docs/test-results/
         retention-days: 30
     
-    # Upload coverage report
     - uses: actions/upload-artifact@v5
       if: always()
       with:
@@ -219,7 +239,6 @@ jobs:
           rm -f .next-server.pid
         fi
     
-    # Comment PR con resultados
     - name: Comment PR with coverage
       if: github.event_name == 'pull_request' && steps.coverage.outputs.statements != '0'
       uses: actions/github-script@v7

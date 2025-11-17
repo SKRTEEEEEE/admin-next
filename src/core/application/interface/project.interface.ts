@@ -1,6 +1,6 @@
-import { IntlBase } from "@/core/domain/entities/intl.type";
-import { KeyProject, TechProject, TimeProject } from "@/core/domain/entities/project";
-import { ResFlow } from "@/core/domain/flows/res.type";
+import { IntlBase } from "@log-ui/core/domain/entities/intl.type";
+import { KeyProject, TechProject, TimeProject } from "@log-ui/core/domain/entities/project";
+import { ResFlow } from "@log-ui/core/domain/flows/res.type";
 import { DBBase, LucideIconNames } from "@/dynamic.types";
 export type Project = {
   nameId: string;

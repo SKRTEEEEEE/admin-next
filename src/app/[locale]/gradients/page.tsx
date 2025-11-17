@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 
-interface GradientRedirectProps {
-  params: { locale: string };
-}
 
-export default function GradientRedirect({ params }: GradientRedirectProps) {
-  redirect(`/${params.locale}`);
+export default function GradientRedirect() {
+  return (
+    <>
+    <div>Hola mundo</div>
+    </>
+  )
 }

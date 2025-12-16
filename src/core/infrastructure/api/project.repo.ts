@@ -2,7 +2,7 @@ import {
   Project,
   ProjectInterface,
 } from "@/core/application/interface/project.interface";
-import { ResFlow } from "@log-ui/core/domain/flows/res.type";
+import { ResFlow } from "@skrteeeeee/profile-domain";
 import { ApiBaseRepository, Modules } from "@log-ui/core/infrastructure/api/base.repository";
 
 export class ProjectApiRepository

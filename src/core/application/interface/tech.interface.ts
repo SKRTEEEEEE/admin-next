@@ -1,5 +1,4 @@
-import { ResFlow } from "@log-ui/core/domain/flows/res.type";
-import type { FullTechData, TechBase } from "@log-ui/core/domain/entities/tech";
+import { ResFlow, FullTechData, TechBase } from "@skrteeeeee/profile-domain";
 import { DBBase } from "@/dynamic.types";
 export type Lib = TechBase & DBBase;
 export type Fw = TechBase & DBBase & {

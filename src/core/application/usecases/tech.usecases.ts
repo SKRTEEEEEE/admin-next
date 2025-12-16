@@ -1,6 +1,5 @@
-import { ResFlow } from "@log-ui/core/domain/flows/res.type";
+import { ResFlow, FullTechData } from "@skrteeeeee/profile-domain";
 import type { Lib, ReadAllFlattenTechsRes, ReadCategoryTechsRes, TechInterface } from "@/core/application/interface/tech.interface";
-import { FullTechData } from "@log-ui/core/domain/entities/tech";
 
 /** Db */
 export class ReadTechDbUseCase {

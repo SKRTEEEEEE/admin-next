@@ -75,10 +75,13 @@
 ```bash
 git clone https://github.com/SKRTEEEEEE/profile-migration.git
 cd admin-next
+git submodule update --init --recursive
 npm install
 npm run dev
 # usa PORT=3003 npm run dev si convives con otro frontend en 3000
 ```
+
+> **Nota:** Este proyecto usa `log-ui-ts` como submodule. Para configurar dependencias adicionales (como `@skrteeeeee/profile-domain`), consulta [log-ui-ts/README.md](log-ui-ts/README.md).
 
 ## 📦 Usage
 

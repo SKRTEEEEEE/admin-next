@@ -179,7 +179,7 @@ jobs:
         cat > .github/badges/coverage-statements.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Coverage (Statements)",
+          "label": "statements",
           "message": "${{ steps.coverage.outputs.combined_statements }}%",
           "color": "${ST_COLOR}",
           "style": "flat-square"
@@ -189,7 +189,7 @@ jobs:
         cat > .github/badges/coverage-branches.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Coverage (Branches)",
+          "label": "branches",
           "message": "${{ steps.coverage.outputs.combined_branches }}%",
           "color": "${BR_COLOR}",
           "style": "flat-square"
@@ -199,7 +199,7 @@ jobs:
         cat > .github/badges/coverage-functions.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Coverage (Functions)",
+          "label": "functions",
           "message": "${{ steps.coverage.outputs.combined_functions }}%",
           "color": "${FN_COLOR}",
           "style": "flat-square"
@@ -209,7 +209,7 @@ jobs:
         cat > .github/badges/coverage-lines.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Coverage (Lines)",
+          "label": "lines",
           "message": "${{ steps.coverage.outputs.combined_lines }}%",
           "color": "${LN_COLOR}",
           "style": "flat-square"
@@ -225,7 +225,7 @@ jobs:
         cat > .github/badges/vitest-statements.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Vitest (Statements)",
+          "label": "statements",
           "message": "${{ steps.coverage.outputs.vitest_statements }}%",
           "color": "${V_ST_COLOR}",
           "style": "flat-square"
@@ -235,7 +235,7 @@ jobs:
         cat > .github/badges/vitest-branches.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Vitest (Branches)",
+          "label": "branches",
           "message": "${{ steps.coverage.outputs.vitest_branches }}%",
           "color": "${V_BR_COLOR}",
           "style": "flat-square"
@@ -245,7 +245,7 @@ jobs:
         cat > .github/badges/vitest-functions.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Vitest (Functions)",
+          "label": "functions",
           "message": "${{ steps.coverage.outputs.vitest_functions }}%",
           "color": "${V_FN_COLOR}",
           "style": "flat-square"
@@ -255,7 +255,7 @@ jobs:
         cat > .github/badges/vitest-lines.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Vitest (Lines)",
+          "label": "lines",
           "message": "${{ steps.coverage.outputs.vitest_lines }}%",
           "color": "${V_LN_COLOR}",
           "style": "flat-square"
@@ -271,7 +271,7 @@ jobs:
         cat > .github/badges/playwright-statements.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Playwright (Statements)",
+          "label": "statements",
           "message": "${{ steps.coverage.outputs.playwright_statements }}%",
           "color": "${P_ST_COLOR}",
           "style": "flat-square"
@@ -281,7 +281,7 @@ jobs:
         cat > .github/badges/playwright-branches.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Playwright (Branches)",
+          "label": "branches",
           "message": "${{ steps.coverage.outputs.playwright_branches }}%",
           "color": "${P_BR_COLOR}",
           "style": "flat-square"
@@ -291,7 +291,7 @@ jobs:
         cat > .github/badges/playwright-functions.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Playwright (Functions)",
+          "label": "functions",
           "message": "${{ steps.coverage.outputs.playwright_functions }}%",
           "color": "${P_FN_COLOR}",
           "style": "flat-square"
@@ -301,7 +301,7 @@ jobs:
         cat > .github/badges/playwright-lines.json << EOF
         {
           "schemaVersion": 1,
-          "label": "Playwright (Lines)",
+          "label": "lines",
           "message": "${{ steps.coverage.outputs.playwright_lines }}%",
           "color": "${P_LN_COLOR}",
           "style": "flat-square"

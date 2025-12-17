@@ -1,0 +1,71 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://localhost:3000/es",
+        "http://localhost:3000/es/gradients",
+        "http://localhost:3000/ca",
+        "http://localhost:3000/en",
+        "http://localhost:3000/de"
+      ],
+      "numberOfRuns": 3,
+      "chromeFlags": "--headless --incognito",
+      "settings": {
+        "formFactor": "mobile",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "cpuSlowdownMultiplier": 4,
+          "requestLatencyMs": 150,
+          "downloadThroughputKbps": 1638.4,
+          "uploadThroughputKbps": 675
+        },
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 2.625,
+          "disabled": false
+        },
+        "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.4 }],
+        "categories:accessibility": ["error", { "minScore": 0.8 }],
+        "categories:seo": ["error", { "minScore": 0.8 }],
+        "categories:best-practices": ["error", { "minScore": 0.8 }],
+
+        "first-contentful-paint": ["warn", { "maxNumericValue": 3000 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 4000 }],
+        "cumulative-layout-shift": ["warn", { "maxNumericValue": 0.25 }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 600 }],
+        "speed-index": ["warn", { "maxNumericValue": 5000 }],
+        
+        "interactive": "off",
+        "max-potential-fid": "off",
+        
+        "uses-optimized-images": "warn",
+        "modern-image-formats": "warn",
+        "offscreen-images": "off",
+        "render-blocking-resources": "off",
+        "unused-javascript": "off",
+        "unused-css-rules": "off",
+        "server-response-time": ["warn", { "maxNumericValue": 1000 }],
+
+        "bf-cache": "off",
+        "legacy-javascript-insight": "off",
+        "forced-reflow-insight": "off",
+        "network-dependency-tree-insight": "off",
+        "document-title": "off",
+        "meta-description": "off",
+        "button-name": "off"
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "./docs/lighthouse-reports/strict"
+    }
+  }
+}

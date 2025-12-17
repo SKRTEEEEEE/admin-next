@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { getProgressiveTimeout, TIMEOUTS } from "../../utils/timeout";
 
 /**
  * E2E Test: Admin Workflow Complete
@@ -11,24 +12,30 @@ import { test, expect } from "@playwright/test";
  */
 
 test.describe("E2E - Admin Complete Workflow", () => {
-  test("should complete full admin workflow", async ({ page }) => {
+  test("should complete full admin workflow", async ({ page }, testInfo) => {
+    const timeout = getProgressiveTimeout(TIMEOUTS.VISIBILITY, testInfo);
+    
     // STEP 1: Landing en página admin
-    await page.goto("http://localhost:3000/es");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:3000/es", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
+    });
+    await page.waitForLoadState("networkidle", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
+    });
     
     // Verificar que estamos en la página admin
     const adminShell = page.locator(".admin-shell");
-    await expect(adminShell).toBeVisible();
+    await expect(adminShell).toBeVisible({ timeout });
     
     const heroTitle = page.locator(".admin-hero h1");
-    await expect(heroTitle).toBeVisible();
+    await expect(heroTitle).toBeVisible({ timeout });
     
     // STEP 2: Verificar que todos los elementos admin están presentes
     const adminBadge = page.locator(".admin-hero-badge");
-    await expect(adminBadge).toBeVisible();
+    await expect(adminBadge).toBeVisible({ timeout });
     
     const primaryButton = page.locator(".admin-cta").first();
-    await expect(primaryButton).toBeVisible();
+    await expect(primaryButton).toBeVisible({ timeout });
     
     // STEP 3: Verificar las tarjetas de status
     const statusCards = page.locator(".admin-card");
@@ -38,10 +45,10 @@ test.describe("E2E - Admin Complete Workflow", () => {
     // Verificar que cada tarjeta tiene título y estado
     for (let i = 0; i < Math.min(cardCount, 3); i++) {
       const card = statusCards.nth(i);
-      await expect(card).toBeVisible();
+      await expect(card).toBeVisible({ timeout });
       
       const cardTitle = card.locator("h3");
-      await expect(cardTitle).toBeVisible();
+      await expect(cardTitle).toBeVisible({ timeout });
     }
     
     // STEP 4: Verificar sección de diagnósticos
@@ -51,7 +58,7 @@ test.describe("E2E - Admin Complete Workflow", () => {
     
     // STEP 5: Verificar sección de proyectos
     const projectsSection = page.locator(".admin-projects");
-    await expect(projectsSection).toBeVisible();
+    await expect(projectsSection).toBeVisible({ timeout });
     
     // STEP 6: Interactuar con enlaces rápidos
     const actionLinks = page.locator(".admin-action-link");
@@ -66,53 +73,81 @@ test.describe("E2E - Admin Complete Workflow", () => {
     }
     
     // STEP 7: Navegar a página de gradientes
-    await page.goto("http://localhost:3000/es/gradients");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:3000/es/gradients", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
+    });
+    await page.waitForLoadState("networkidle", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
+    });
     
     // Verificar que la navegación funcionó
     const body = page.locator("body");
-    await expect(body).toBeVisible();
+    await expect(body).toBeVisible({ timeout });
     
     // STEP 8: Volver a home
-    await page.goto("http://localhost:3000/es");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:3000/es", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
+    });
+    await page.waitForLoadState("networkidle", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
+    });
     
     // Verificar que volvimos correctamente
-    await expect(adminShell).toBeVisible();
-    await expect(heroTitle).toBeVisible();
+    await expect(adminShell).toBeVisible({ timeout });
+    await expect(heroTitle).toBeVisible({ timeout });
   });
   
-  test("should navigate between locales", async ({ page }) => {
+  test("should navigate between locales", async ({ page }, testInfo) => {
+    const timeout = getProgressiveTimeout(TIMEOUTS.VISIBILITY, testInfo);
+    
     // STEP 1: Start in Spanish
-    await page.goto("http://localhost:3000/es");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:3000/es", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
+    });
+    await page.waitForLoadState("networkidle", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
+    });
     
     const htmlES = page.locator("html");
     await expect(htmlES).toHaveAttribute("lang", "es");
     
     // STEP 2: Navigate to Catalan
-    await page.goto("http://localhost:3000/ca");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:3000/ca", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
+    });
+    await page.waitForLoadState("networkidle", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
+    });
     
     const htmlCA = page.locator("html");
     await expect(htmlCA).toHaveAttribute("lang", "ca");
     
     // STEP 3: Navigate to English
-    await page.goto("http://localhost:3000/en");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:3000/en", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
+    });
+    await page.waitForLoadState("networkidle", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
+    });
     
     const htmlEN = page.locator("html");
     await expect(htmlEN).toHaveAttribute("lang", "en");
     
     // STEP 4: Verify admin structure is present in all locales
     const adminShell = page.locator(".admin-shell");
-    await expect(adminShell).toBeVisible();
+    await expect(adminShell).toBeVisible({ timeout });
   });
   
-  test("should interact with theme toggle", async ({ page }) => {
+  test("should interact with theme toggle", async ({ page }, testInfo) => {
+    const timeout = getProgressiveTimeout(TIMEOUTS.VISIBILITY, testInfo);
+    
     // STEP 1: Load page
-    await page.goto("http://localhost:3000/es");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:3000/es", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
+    });
+    await page.waitForLoadState("networkidle", {
+      timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
+    });
     
     // STEP 2: Find theme toggle button (si existe)
     // Nota: Ajustar selector según tu implementación real

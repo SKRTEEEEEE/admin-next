@@ -355,3 +355,15 @@ docs/
     ├── html-report/     # Playwright HTML report
     └── artifacts/       # Screenshots, traces
 ```
+
+
+## 🏷️ Badges
+### `lhci`
+- Se incluye una fila (3ra linea) con los resultados de los informes de lighthouse
+- **Los reportes se generan el local al ejecutar `npm run perf:check`**
+  - Esto significa que al ejecutar este comando se han de actualizar los valores de ./docs/badges
+### test
+- **Los reportes se generan con la action `lighthouse.yml` que sera renombrada a `test-coverage.yml`**
+- Todas las lineas de test, han de incluir los campos clásicos de coverage(st, br, func y lines) 
+- Se incluye/genera una fila (2da linea) con la media de los resultados de ambas partes (pw + vitest)
+- [ ] Se incluyen lineas (4ta i 5ta) de cada 'sección' de los test (playwright y vitest) 

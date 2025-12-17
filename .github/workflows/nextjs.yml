@@ -1,13 +1,15 @@
-name: '🐢 Next.js'
+name: '🐢 Next.js Build'
 
 on:
   push:
+    branches-ignore:
+      - main  # main branch is handled by test-coverage.yml
 
 permissions:
   contents: write
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛬
@@ -25,7 +27,7 @@ jobs:
       - name: Setup Node ⚙️
         uses: actions/setup-node@v6
         with:
-          node-version: 22.5
+          node-version: lts/*
 
       - name: Install dependencies 📩
         if: steps.cache-node_modules.outputs.cache-hit != 'true'
@@ -33,11 +35,11 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Build Next.js 📦
-        run: npm run build
-
       - name: Lint code 💅
         run: npm run lint
+
+      - name: Build Next.js 📦
+        run: npm run build
 
       - name: Cache Next.js build ⚡
         uses: actions/cache@v4

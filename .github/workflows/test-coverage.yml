@@ -1,0 +1,344 @@
+name: 🧪 Test Coverage
+on:
+  pull_request:
+    branches: [ main, master, buildn ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    # ✅ CRÍTICO: Checkout con submódulos RECURSIVOS
+    - uses: actions/checkout@v5
+      with:
+        submodules: recursive
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    # ✅ Instalar dependencias en submódulos anidados
+    - name: Initialize submodules
+      run: |
+        git submodule update --init --recursive
+        git submodule foreach --recursive 'npm ci || echo "No package.json in $(pwd)"'
+
+    - name: Reset CI artifacts 🧹
+      run: |
+        rm -rf docs/test-results docs/coverage .nyc_output || true
+        mkdir -p docs/test-results docs/coverage/vitest docs/coverage/playwright
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version: lts/*
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: Get Playwright version
+      id: playwright-version
+      run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")" >> $GITHUB_OUTPUT
+
+    - name: Cache Playwright browsers
+      uses: actions/cache@v4
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.PLAYWRIGHT_VERSION }}
+
+    - name: Install Playwright Browsers
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      run: npx playwright install --with-deps
+
+    - name: Install Playwright dependencies only
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps
+
+    # ============================================================
+    # VITEST - Tests rápidos sin servidor (~2s)
+    # ============================================================
+    - name: Run Vitest with coverage ⚡
+      run: npm run vitest:cov
+      continue-on-error: false
+
+    # ============================================================
+    # PLAYWRIGHT - Tests con servidor
+    # ============================================================
+    - name: Build Next.js
+      run: npm run build
+      env:
+        NODE_ENV: production
+
+    - name: Start Next.js server
+      run: |
+        npm run start &
+        echo $! > .next-server.pid
+      env:
+        NODE_ENV: production
+        NEXT_PUBLIC_API_MOCKING: "enabled"
+        PORT: 3000
+    
+    - name: Wait for server to be ready
+      run: |
+        echo "⏳ Waiting for Next.js server..."
+        
+        check_server() {
+          curl -s -o /dev/null -w "%{http_code}" "$1" 2>/dev/null
+        }
+        
+        MAX_ATTEMPTS=45
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+          STATUS=$(check_server "http://localhost:3000")
+          
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "308" ] || [ "$STATUS" = "404" ]; then
+            echo "✅ Server ready (status: $STATUS)"
+            break
+          fi
+          
+          echo "⏳ Attempt $i/$MAX_ATTEMPTS (status: $STATUS)"
+          sleep 2
+          
+          if [ $i -eq $MAX_ATTEMPTS ]; then
+            echo "❌ Server failed to start"
+            exit 1
+          fi
+        done
+        
+        for LOCALE in en es ca de; do
+          STATUS=$(check_server "http://localhost:3000/$LOCALE")
+          echo "✅ Locale $LOCALE: $STATUS"
+        done
+        
+        echo "🎉 Server fully ready!"
+        sleep 3
+
+    - name: Run Playwright tests with NYC coverage 🎭
+      run: npm run pw:cov
+      continue-on-error: false
+      env:
+        CI: true
+
+    - name: Stop Next.js server ⛔
+      if: always()
+      run: |
+        if [ -f .next-server.pid ]; then
+          kill $(cat .next-server.pid) || true
+          rm -f .next-server.pid
+        fi
+
+    # ============================================================
+    # COVERAGE PARSING - Vitest + Playwright
+    # ============================================================
+    - name: Ensure Playwright coverage summary
+      if: always()
+      run: npx nyc report --reporter=json-summary --report-dir=docs/coverage/playwright
+
+    - name: Parse coverage data
+      id: coverage
+      if: always()
+      run: |
+        # Parse Vitest coverage
+        VITEST_SUMMARY="./docs/coverage/vitest/coverage-summary.json"
+        if [ -f "$VITEST_SUMMARY" ]; then
+          V_STATEMENTS=$(node -e "console.log(require('${VITEST_SUMMARY}').total.statements.pct)")
+          V_BRANCHES=$(node -e "console.log(require('${VITEST_SUMMARY}').total.branches.pct)")
+          V_FUNCTIONS=$(node -e "console.log(require('${VITEST_SUMMARY}').total.functions.pct)")
+          V_LINES=$(node -e "console.log(require('${VITEST_SUMMARY}').total.lines.pct)")
+        else
+          V_STATEMENTS=0
+          V_BRANCHES=0
+          V_FUNCTIONS=0
+          V_LINES=0
+        fi
+        
+        # Parse Playwright coverage
+        PW_SUMMARY="./docs/coverage/playwright/coverage-summary.json"
+        if [ -f "$PW_SUMMARY" ]; then
+          P_STATEMENTS=$(node -e "console.log(require('${PW_SUMMARY}').total.statements.pct)")
+          P_BRANCHES=$(node -e "console.log(require('${PW_SUMMARY}').total.branches.pct)")
+          P_FUNCTIONS=$(node -e "console.log(require('${PW_SUMMARY}').total.functions.pct)")
+          P_LINES=$(node -e "console.log(require('${PW_SUMMARY}').total.lines.pct)")
+        else
+          P_STATEMENTS=0
+          P_BRANCHES=0
+          P_FUNCTIONS=0
+          P_LINES=0
+        fi
+        
+        # Calculate combined average
+        COMBINED_ST=$(node -e "console.log((($V_STATEMENTS + $P_STATEMENTS) / 2).toFixed(2))")
+        COMBINED_BR=$(node -e "console.log((($V_BRANCHES + $P_BRANCHES) / 2).toFixed(2))")
+        COMBINED_FN=$(node -e "console.log((($V_FUNCTIONS + $P_FUNCTIONS) / 2).toFixed(2))")
+        COMBINED_LN=$(node -e "console.log((($V_LINES + $P_LINES) / 2).toFixed(2))")
+        
+        # Output all metrics
+        echo "vitest_statements=$V_STATEMENTS" >> $GITHUB_OUTPUT
+        echo "vitest_branches=$V_BRANCHES" >> $GITHUB_OUTPUT
+        echo "vitest_functions=$V_FUNCTIONS" >> $GITHUB_OUTPUT
+        echo "vitest_lines=$V_LINES" >> $GITHUB_OUTPUT
+        
+        echo "playwright_statements=$P_STATEMENTS" >> $GITHUB_OUTPUT
+        echo "playwright_branches=$P_BRANCHES" >> $GITHUB_OUTPUT
+        echo "playwright_functions=$P_FUNCTIONS" >> $GITHUB_OUTPUT
+        echo "playwright_lines=$P_LINES" >> $GITHUB_OUTPUT
+        
+        echo "combined_statements=$COMBINED_ST" >> $GITHUB_OUTPUT
+        echo "combined_branches=$COMBINED_BR" >> $GITHUB_OUTPUT
+        echo "combined_functions=$COMBINED_FN" >> $GITHUB_OUTPUT
+        echo "combined_lines=$COMBINED_LN" >> $GITHUB_OUTPUT
+        
+        echo "📊 Vitest: Statements $V_STATEMENTS% | Branches $V_BRANCHES% | Functions $V_FUNCTIONS% | Lines $V_LINES%"
+        echo "🎭 Playwright: Statements $P_STATEMENTS% | Branches $P_BRANCHES% | Functions $P_FUNCTIONS% | Lines $P_LINES%"
+        echo "📈 Combined: Statements $COMBINED_ST% | Branches $COMBINED_BR% | Functions $COMBINED_FN% | Lines $COMBINED_LN%"
+
+    # ============================================================
+    # BADGES GENERATION - Only on main push
+    # ============================================================
+    - name: Create coverage badges 🏅
+      if: github.ref == 'refs/heads/main'
+      run: |
+        mkdir -p .github/badges
+
+        get_color() {
+          local value=$(echo "$1" | awk '{printf "%.0f", $1}')
+          if [ "$value" -ge 80 ]; then
+            echo "brightgreen"
+          elif [ "$value" -ge 60 ]; then
+            echo "yellow"
+          elif [ "$value" -ge 40 ]; then
+            echo "orange"
+          else
+            echo "red"
+          fi
+        }
+
+        # Combined badges (averaged)
+        ST_COLOR=$(get_color "${{ steps.coverage.outputs.combined_statements }}")
+        BR_COLOR=$(get_color "${{ steps.coverage.outputs.combined_branches }}")
+        FN_COLOR=$(get_color "${{ steps.coverage.outputs.combined_functions }}")
+        LN_COLOR=$(get_color "${{ steps.coverage.outputs.combined_lines }}")
+
+        cat > .github/badges/coverage-statements.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Coverage (Statements)",
+          "message": "${{ steps.coverage.outputs.combined_statements }}%",
+          "color": "${ST_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/coverage-branches.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Coverage (Branches)",
+          "message": "${{ steps.coverage.outputs.combined_branches }}%",
+          "color": "${BR_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/coverage-functions.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Coverage (Functions)",
+          "message": "${{ steps.coverage.outputs.combined_functions }}%",
+          "color": "${FN_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/coverage-lines.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Coverage (Lines)",
+          "message": "${{ steps.coverage.outputs.combined_lines }}%",
+          "color": "${LN_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+    - name: Commit coverage badges
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add .github/badges/*.json
+        git diff --staged --quiet || git commit -m "chore: update coverage badges [skip ci]"
+        git push
+
+    # ============================================================
+    # ARTIFACTS UPLOAD
+    # ============================================================
+    - uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: playwright-report
+        path: docs/test-results/
+        retention-days: 30
+    
+    - uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: vitest-coverage
+        path: docs/coverage/vitest/
+        retention-days: 30
+
+    - uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: playwright-coverage
+        path: docs/coverage/playwright/
+        retention-days: 30
+
+    # ============================================================
+    # PR COMMENT with detailed metrics
+    # ============================================================
+    - name: Comment PR with coverage
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const body = `## 🧪 Test Coverage Results
+          
+          ### 📊 Combined Coverage (Average)
+          | Metric | Coverage |
+          |--------|----------|
+          | **Statements** | ${{ steps.coverage.outputs.combined_statements }}% |
+          | **Branches** | ${{ steps.coverage.outputs.combined_branches }}% |
+          | **Functions** | ${{ steps.coverage.outputs.combined_functions }}% |
+          | **Lines** | ${{ steps.coverage.outputs.combined_lines }}% |
+          
+          ### ⚡ Vitest Coverage (Unit Tests - Fast)
+          | Metric | Coverage |
+          |--------|----------|
+          | Statements | ${{ steps.coverage.outputs.vitest_statements }}% |
+          | Branches | ${{ steps.coverage.outputs.vitest_branches }}% |
+          | Functions | ${{ steps.coverage.outputs.vitest_functions }}% |
+          | Lines | ${{ steps.coverage.outputs.vitest_lines }}% |
+          
+          ### 🎭 Playwright Coverage (Integration Tests)
+          | Metric | Coverage |
+          |--------|----------|
+          | Statements | ${{ steps.coverage.outputs.playwright_statements }}% |
+          | Branches | ${{ steps.coverage.outputs.playwright_branches }}% |
+          | Functions | ${{ steps.coverage.outputs.playwright_functions }}% |
+          | Lines | ${{ steps.coverage.outputs.playwright_lines }}% |
+          
+          ---
+          
+          📦 [View full reports in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });

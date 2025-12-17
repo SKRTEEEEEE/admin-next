@@ -1,6 +1,6 @@
 {
   "user": [],
-  "17-12-2025-15": [
+  "17-12-2025-16": [
     "react-hook-form",
     "radix-ui",
     "tailwind-css",
@@ -10,6 +10,17 @@
     "lighthouse",
     "testing-library",
     "node-js",
-    "vite"
+    "vite",
+    "thirdweb",
+    "zod",
+    "eslint",
+    "typescript",
+    "vitest",
+    "tailwindcss",
+    "javascript",
+    "css",
+    "shell",
+    "docker",
+    "yaml"
   ]
 }

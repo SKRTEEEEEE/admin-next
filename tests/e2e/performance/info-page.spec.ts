@@ -62,17 +62,18 @@ async function setupVitals(page: Page) {
   });
 }
 
-test.describe("E2E Performance - Info Page", () => {
-  test("Homepage loads successfully", async ({ page }) => {
+test.describe("E2E Performance - Admin Home Page", () => {
+  test("Admin home page loads successfully", async ({ page }) => {
     const baseUrl = process.env.TEST_ENV === "production"
       ? "https://profile-next-kappa.vercel.app"
       : "http://localhost:3000";
     const url = `${baseUrl}/en`;
     console.log("Testing URL:", url);
-    await page.goto(url);
-    await page.waitForLoadState("domcontentloaded");
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
 
-    // Verificar que la página carga
-    await expect(page.locator("body")).toBeVisible();
+    // Verificar que la página admin carga
+    const adminShell = await page.locator(".admin-shell");
+    await expect(adminShell).toBeVisible({ timeout: 10000 });
   });
 });

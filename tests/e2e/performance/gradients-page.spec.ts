@@ -69,10 +69,15 @@ test.describe("E2E Performance - Gradients Page", () => {
       : "http://localhost:3000";
     const url = `${baseUrl}/es/gradients`;
     console.log("Testing URL:", url);
-    await page.goto(url);
-    await page.waitForLoadState("domcontentloaded");
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
 
-    // Verificar que la página carga
-    await expect(page.locator("body")).toBeVisible();
+    // Verificar que la página de gradientes carga
+    const body = await page.locator("body");
+    await expect(body).toBeVisible({ timeout: 10000 });
+    
+    // Verificar que hay contenido específico de gradientes
+    const heading = await page.locator("h1");
+    await expect(heading).toBeVisible();
   });
 });

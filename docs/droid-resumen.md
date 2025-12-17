@@ -1,40 +1,38 @@
 # Resumen de sesión Droid
+## Ctx
+Hola droid, fijate en mi carpeta/proyecto en ./admin-next, si te fijas este es una copia de agora-next/profile-next. La question de este proyecto esque estoy migrando de un frontend/backend nextjs (profile-page), a una estructura de backend monolitico (profile-nest) y frontends micro (admin, profile, agora). 
+- Mas info en [./docs/reports/microservices-architecture-analysis.md](../../docs/reports/microservices-architecture-analysis.md) and [./docs/structure-concepts.md](../../docs/structure-concepts.md)
+- `admin-next` = template base para nuevos micro-frontend
+- En el issue de ahora, debes centrarte en la parte de admin-next, para crear el **template definitivo para los nuevos micro-frontend de este proyecto**
+- Ha de haver una pagina raiz, donde diga admin page pero tenga todos las clases de test(no eliminar ninguna carpeta) y test adaptados a esta nueva pagina, que tenga el fondo gradiente cambiante, y que mantenga las funcionalidades de robots.txt, shadcnui, i18n, github-actions, etc... Puedes ir pidiendo feedback ya que estare atento
 
-## Prompt original
-Hola droid, fijate en mi carpeta/proyecto en ./admin-next, si te fijas este es una copia de
-   profile-next. La question de este proyecto esque estoy migrando de un frontend/backend nextjs
-   (profile-page), a una estructura de backend monolitico (profile-nest) y frontends micro (admin,
-   profile, agora). - En el issue de ahora, debes centrarte en la parte de admin-next, ya que ahora tiene
-    muchas partes del proyecto que se ha copiado original, sobretodo muchos test que no aportaran nada al
-    proyecto. Empieza por limpiar todos estos test y dejar una sola pagina raiz, donde diga admin page
-   pero tenga todos las clases de test(no eliminar ninguna carpeta) y test adaptados a esta nueva pagina,
-    que tenga el fondo gradiente cambiante, y que mantenga las funcionalidades de robots.txt, shadcnui,
-   i18n, github-actions, etc... pero elimina el resto de librerias como por ejemplo particles-ts. Puedes
-   ir pidiendo feedback ya que estare atento
-
-## Proceso seguido
-- Reemplacé los contenidos `ceo.json` por `admin.json` en todos los locales y actualicé el loader i18n para servir sólo el nuevo template.
-- Añadí los seis presets de temas (`light/dark/neon/emerald/sunset/terminal`), expuse el selector en `ModeToggle` y actualicé los tests component/pages.
-- Simplifiqué el routing/i18n (solo `/` y `/gradients`), ajusté `manageRoot` para redirigir a la landing admin y mantuve robots/sitemap.
-- Actualicé AGENTS.md y README.md para describir el blueprint; dejé un mínimo de pruebas por carpeta y añadí `tests/component/admin-components.spec.ts`.
-- Ejecuté `npm run lint`, `npm run test:unit`, `npm run build`, arranqué `npm run start` + `npx wait-on` y luego `npm run test:server` (todo en verde).
-
-## Estado actual
-- Lint, unit/api y server tests pasan tras levantar `npm run start` y ejecutar `npm run test:server` con `wait-on`.
-- La landing admin (`/[locale]`) ya contiene hero, status grid, diagnósticos y quick links con contenido traducible en `admin.json`.
-- Los tests tienen al menos un ejemplo por carpeta; `tests/component/*` usan los nuevos selectores `.admin-*` y el API test consume `app/api/admin/status`.
-
-
+- Tienes un reporte de los test actuales en http://localhost:9323/ y en los reportes (recien ejecutados)
+- Tienes un servidor del backend corriendo en :3001
+- Tienes un servidor del frontend (`admin-next`) en :3000
+## Objetivo
+Aconseguir un buen template para next.js centrado en test rápido y muy completo. Para ello 
 ## Key points
-- Cambia toda referencia a ceo, ya que esto se refería a antiguos componentes del apartado 'profile', el cual ahora sera otro micro-frontend -> cambia toda referencia de 'ceo' a 'admin', si acaso, aunque es redundante ya que ahora es un micro-frontend
-- Recuerda que hay muchos test/código, heredado de la copia que hemos hecho de ./profile-page, recuerda eliminar estas partes
-- Para el navbar, has de inspirar-te en ./agora-next o ./profile-page(el apartado de /admin y /academia)
-- Para los seis tipos de estilos(next-themes), has de inspirar-te en ./agora-next o ./profile-page(el apartado de /admin y /academia)
-- Tienes un servidor levantado en modo dev, en el puerto :3000
-- [ ] Crear un template funcional, con Next, Shadcn/ui, Github Actions (actuales), i18n, next-themes(6 tipos), SEO focus, fondos gradients variables(no obligatorio)
-- [ ] Asegurarte de que los test pasen y de que haya como mínimo un test de ejemplo en cada carpeta.
-- [ ] Intentar mantener el mínimo de librerías para este ejemplo (preguntar las librerías que vas a eliminar)
-- [ ] Asegura-te de tener el mismo Navbar que en ./agora-next (pero sin la funcionalidad de iniciar sesión, por ahora)
-- [ ] Asegura-te de tener los mismos estilos(next-themes), que ./agora-next
-- [x] Optimizar el AGENTS.md 'de cero' para este template
-- [x] Optimizar el README.md 'de cero' para este template
+- De momento mantendremos los test que están funcionando de `playwright` y se harán de nuevo en `vitest` si es necesario y posible
+- [ ] Utilizaremos `vitest` para los test regulares 
+- [ ] Un enfoque mejor para `playwright` de forma que:
+  - no tarde mucho 
+  - no consuma tantos recursos en el pc. 
+- [ ] Refactor or delete tests que no están funcionando
+
+### Failed test
+```bash
+ 5 failed
+    [e2e] › tests\e2e\performance\gradients-page.spec.ts:66:7 › E2E Performance - Gradients Page › Gradients page loads successfully
+    [e2e] › tests\e2e\performance\homepage.spec.ts:66:7 › Next.js Performance + JS Coverage › Home page loads successfully
+    [e2e] › tests\e2e\performance\info-page.spec.ts:66:7 › E2E Performance - Info Page › Homepage loads successfully
+    [performance] › tests\performance\bundle-budgets.spec.ts:4:7 › Performance - Bundle Budgets › Homepage loads with reasonable bundle size
+    [performance] › tests\performance\web-vitals-pure.spec.ts:4:7 › Performance - Web Vitals (Pure Load) › Homepage loads with basic vitals
+  6 flaky
+    [pages] › tests\pages\portafolio.spec.ts:4:7 › Admin root localized › Catalan locale loads successfully
+    [integration] › tests\integration\accessibility.spec.ts:4:7 › Accessibility smoke tests › page loads with correct locale
+    [integration] › tests\integration\pages\proyectos-id.spec.ts:4:7 › Locale routing › /es route loads successfully
+    [integration] › tests\integration\seo-metadata-enhanced.spec.ts:4:7 › Enhanced SEO metadata › page loads successfully
+    [integration] › tests\integration\seo-metadata.spec.ts:4:7 › SEO metadata for admin page › page loads successfully
+    [integration] › tests\integration\usecases.spec.ts:4:7 › Admin status use cases › page loads successfully
+  1 skipped
+```

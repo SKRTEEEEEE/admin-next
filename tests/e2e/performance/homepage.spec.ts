@@ -64,9 +64,11 @@ async function setupVitals(page: Page) {
 
 test.describe("Next.js Performance + JS Coverage", () => {
   test("Home page loads successfully", async ({ page }) => {
-    await page.goto("http://localhost:3000/es");
-    // Verificar que la página carga
-    const htmlElement = await page.locator("html");
-    await expect(htmlElement).toBeVisible();
+    await page.goto("http://localhost:3000/es", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
+    
+    // Verificar que la página admin carga con su estructura
+    const adminShell = await page.locator(".admin-shell");
+    await expect(adminShell).toBeVisible({ timeout: 10000 });
   });
 });

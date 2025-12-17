@@ -24,6 +24,7 @@
     "pw:cov": "nyc --silent playwright test",
     "// === COMBINADOS ===": "",
     "test:check": "./scripts/pre-push.sh",
+    "test:full": "npm run vitest:cov && npm run pw:cov && npm run perf && npm run perf:check",
     "test:cov": "npm run vitest:cov && npm run pw:cov",
     "test:all": "npm run vitest:run && npm run pw",
     "// === LEGACY (deprecar gradualmente) ===": "",

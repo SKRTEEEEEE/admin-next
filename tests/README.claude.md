@@ -283,17 +283,34 @@ El coverage total se calcula sumando:
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     CI/CD - GitHub Actions                          │
 ├─────────────────────────────────────────────────────────────────────┤
-│  ON: push (any branch)                                              │
+│  ON: push (any branch != main)                                      │
 │  └── next build                     → Solo build check (no tests)   │
 │                                                                     │
-│  ON: pull_request (main)            → FULL                          │
-│  ├── npm run test:cov               → Vitest + Playwright coverage  │
-│  └── Post comment con métricas                                      │
-│                                                                     │
-│  ON: push (main)                                                    │
-│  └── npm run vitest:cov             → Vitest coverage only          │
+│  ON: pull_request (main) | push (main)  → FULL                      │
+│  ├── npm run vitest:cov             → Vitest coverage               │
+│  ├── Playwright webServer gestiona servidor automáticamente 🔧     │
+│  │   └── CI: npm run dev | Local: npm run start                    │
+│  ├── npm run pw:cov                 → Playwright coverage           │
+│  └── Post badges + comment (solo main push / PR)                   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+### ⚠️ **Nota Importante sobre Playwright webServer**
+
+**Problema resuelto**: Los tests fallaban en CI porque `npm run start` (producción) 
+mostraba páginas de error (`__next_error__`) en lugar del contenido esperado.
+
+**Solución**: Usar `npm run dev` en CI en lugar de producción.
+
+```typescript
+// playwright.config.ts
+webServer: {
+  command: process.env.CI ? 'npm run dev' : 'npm run start',
+  // CI usa dev (más tolerante), local usa start (si no tienes dev corriendo)
+}
+```
+
+Ver [reporte detallado](../docs/reports/playwright-ci-dev-vs-prod.md) para más info.
 
 ---
 

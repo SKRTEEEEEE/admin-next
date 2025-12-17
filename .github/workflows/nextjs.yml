@@ -2,8 +2,8 @@ name: '🔨 Build Check'
 
 on:
   push:
-  #  branches-ignore:
-  #     - main  # main branch is handled by test-coverage.yml  (only when works)
+   branches-ignore:
+      - main  # main branch is handled by test-coverage.yml  (only when works)
 
 permissions:
   contents: read

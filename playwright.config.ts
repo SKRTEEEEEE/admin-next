@@ -21,6 +21,11 @@ export default defineConfig({
     timeout: 120000, // 2min to start
     stdout: 'ignore', // Don't pollute logs
     stderr: 'pipe', // Show only errors
+    env: {
+      NODE_ENV: 'production',
+      // Thirdweb Client ID (public, safe to commit)
+      NEXT_PUBLIC_THIRDWEB_CLIENT_ID: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || 'ef963e90a058d6e8228ab34d38f50752',
+    },
   },
   
   // Configure projects for different test types

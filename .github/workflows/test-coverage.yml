@@ -82,6 +82,7 @@ jobs:
         CI: true
         NODE_ENV: production
         NEXT_PUBLIC_API_MOCKING: "enabled"
+        NEXT_PUBLIC_THIRDWEB_CLIENT_ID: "ef963e90a058d6e8228ab34d38f50752"
 
     # ============================================================
     # COVERAGE PARSING - Vitest + Playwright

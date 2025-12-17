@@ -4,13 +4,13 @@
     "thirdweb",
     "zod",
     "eslint",
-    "tailwindcss",
     "typescript",
+    "vitest",
+    "tailwindcss",
     "javascript",
     "css",
     "shell",
     "docker",
-    "yaml",
-    "vitest"
+    "yaml"
   ]
 }

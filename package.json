@@ -23,8 +23,7 @@
     "pw:performance": "playwright test --project=pw:performance",
     "pw:cov": "nyc --silent playwright test",
     "// === COMBINADOS ===": "",
-    "test:check": "./scripts/pre-push.sh",
-    "test:full": "npm run vitest:cov && npm run pw:cov && npm run perf && npm run perf:check",
+    "test:check": "npm run vitest:cov && npm run pw:cov && npm run perf && npm run perf:check",   
     "test:cov": "npm run vitest:cov && npm run pw:cov",
     "test:all": "npm run vitest:run && npm run pw",
     "// === LEGACY (deprecar gradualmente) ===": "",
@@ -37,7 +36,8 @@
     "perf": "lhci autorun --config=lighthouserc.perf.json",
     "perf:check": "node scripts/check-perf-thresholds.js",
     "// === OTROS ===": "",
-    "lh:home": "npx lighthouse http://localhost:3000/es --output=json --output=html --output-path=./docs/lighthouse-reports/home.html --chrome-flags='--headless' --no-enable-error-reporting"
+    "lh:home": "npx lighthouse http://localhost:3000/es --output=json --output=html --output-path=./docs/lighthouse-reports/home.html --chrome-flags='--headless' --no-enable-error-reporting",
+    "lhci:strict": "lhci autorun --config=lighthouserc.strict.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

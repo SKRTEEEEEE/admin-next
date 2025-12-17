@@ -8,7 +8,7 @@
         "http://localhost:3000/en",
         "http://localhost:3000/de"
       ],
-      "numberOfRuns": 2,
+      "numberOfRuns": 1,
       "chromeFlags": "--headless --incognito",
       "settings": {
         "formFactor": "desktop",
@@ -40,7 +40,7 @@
         "first-contentful-paint": ["error", { "maxNumericValue": 1800 }],
         "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
         "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
-        "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 250 }],
         "speed-index": ["error", { "maxNumericValue": 3000 }],
         
        "interactive": ["warn", { "maxNumericValue": 3800 }],

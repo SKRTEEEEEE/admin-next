@@ -15,14 +15,14 @@ export default defineConfig({
   
   // Automatic server management
   webServer: {
-    command: 'npm run start',
+    command: process.env.CI ? 'npm run dev' : 'npm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: true, // Reuse dev server if running
     timeout: 120000, // 2min to start
-    stdout: 'ignore', // Don't pollute logs
-    stderr: 'pipe', // Show only errors
+    stdout: 'pipe', // Show server logs
+    stderr: 'pipe',
     env: {
-      NODE_ENV: 'production',
+      NODE_ENV: process.env.CI ? 'development' : 'production',
       // Thirdweb Client ID (public, safe to commit)
       NEXT_PUBLIC_THIRDWEB_CLIENT_ID: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || 'ef963e90a058d6e8228ab34d38f50752',
     },

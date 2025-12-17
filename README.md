@@ -35,7 +35,10 @@
 
 </div>
 
-> Un punto de partida minimalista y moderno para frontends. Construido con Next.js 16, React 19, TypeScript, y Tailwind CSS. Incluye soporte multiidioma, temas personalizados, y gradientes animados.
+> *Un punto de partida moderno para frontend's. Construido con Next.js 16, React 19, TypeScript, y Tailwind CSS. Incluye soporte multi-idioma, temas personalizados, y gradientes animados.*
+> - Especialmente pensado para **micro-frontend's y clean-architecture con fuerte acople a `domain`**
+> - **`domain` como package: contrato central** de los micro-frontend's, compartido con el backend.
+> - **`log-ui` como submodule: contrato visual** de los micro-frontend's.
 
 ---
 
@@ -78,7 +81,9 @@
 
 ### Desarrollo y Testing
 
-- **Testing:** [Playwright](https://playwright.dev/) (7 proyectos: unit, api, component, pages, integration, e2e, performance)
+- **Testing:** 
+  - [Playwright](https://playwright.dev/) (6 cat: unit, api, component, integration, e2e, performance)
+  - Vitest (2 cat: unit, api)
 - **Coverage:** [NYC](https://www.npmjs.com/package/nyc) (thresholds: 60/60/60/40)
 - **Performance:** [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) (thresholds: 70/80/80/80)
 - **Linting:** [ESLint 9](https://eslint.org/) con configuración Next.js
@@ -98,6 +103,8 @@ npm run dev
 > **Nota:** Este proyecto usa `log-ui-ts` como submodule. Para configurar dependencias adicionales (como `@skrteeeeee/profile-domain`), consulta [log-ui-ts/README.md](log-ui-ts/README.md).
 
 ## 📦 Usage
+
+> 📚 **Full docs**: See [tests/README.md](tests/README.md) for complete testing guide
 
 ### Quick Start
 ```bash
@@ -135,7 +142,6 @@ npm run perf:check       # Validate thresholds + update badges
 - **Pre-push** (automatic): playwright tests + performance checks
 - **CI/CD**: Full test suite + badge updates on main
 
-> 📚 **Full docs**: See [tests/README.claude.md](tests/README.claude.md) for complete testing guide
 
 ## 📁 Estructura del Proyecto
 ```

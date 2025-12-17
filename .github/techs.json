@@ -1,6 +1,6 @@
 {
   "user": [],
-  "16-12-2025-19": [
+  "17-12-2025-13": [
     "thirdweb",
     "zod",
     "eslint",
@@ -10,6 +10,7 @@
     "css",
     "shell",
     "docker",
-    "yaml"
+    "yaml",
+    "vitest"
   ]
 }

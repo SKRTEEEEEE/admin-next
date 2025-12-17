@@ -1,15 +1,16 @@
-name: '🐢 Next.js Build'
+name: '🔨 Build Check'
 
 on:
   push:
-    branches-ignore:
-      - main  # main branch is handled by test-coverage.yml
+  #  branches-ignore:
+  #     - main  # main branch is handled by test-coverage.yml  (only when works)
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛬
@@ -17,20 +18,18 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Cache node_modules 🧠
-        id: cache-node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-
       - name: Setup Node ⚙️
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
+          cache: 'npm'
+
+      - name: Initialize submodules 📦
+        run: |
+          git submodule update --init --recursive
+          git submodule foreach --recursive 'npm ci || echo "No package.json in $(pwd)"'
 
       - name: Install dependencies 📩
-        if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -40,9 +39,5 @@ jobs:
 
       - name: Build Next.js 📦
         run: npm run build
-
-      - name: Cache Next.js build ⚡
-        uses: actions/cache@v4
-        with:
-          path: .next/cache
-          key: ${{ runner.os }}-next-${{ hashFiles('package-lock.json') }}
+        env:
+          NODE_ENV: production

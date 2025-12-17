@@ -8,17 +8,31 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-![Test Coverage](https://img.shields.io/badge/TEST-Coverage-green?style=social)
+![Test Coverage](https://img.shields.io/badge/🌡️TEST-Coverage-green?style=social)
 [![Coverage: Statements](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/.github/badges/coverage-statements.json)](.github/badges/coverage-statements.json)
 [![Coverage: Branches](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/.github/badges/coverage-branches.json)](.github/badges/coverage-branches.json)
 [![Coverage: Functions](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/.github/badges/coverage-functions.json)](.github/badges/coverage-functions.json)
 [![Coverage: Lines](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/.github/badges/coverage-lines.json)](.github/badges/coverage-lines.json)
 
-![Lighthouse Performance](https://img.shields.io/badge/LIGHTHOUSE-Performance-orange?style=social)
+![Lighthouse Performance](https://img.shields.io/badge/🏠LIGHTHOUSE-Performance-orange?style=social)
 [![Performance](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/docs/badges/perf.json)](docs/badges/perf.json)
 [![Accessibility](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/docs/badges/acc.json)](docs/badges/acc.json)
 [![SEO](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/docs/badges/seo.json)](docs/badges/seo.json)
 [![Best Practices](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SKRTEEEEEE/admin-next/main/docs/badges/bp.json)](docs/badges/bp.json)
+
+
+![Vitest Coverage](https://img.shields.io/badge/⚡Vitest-coverage-orange?style=social)
+![Vitest Statements](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/vitest-statements.json)
+![Vitest Branches](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/vitest-branches.json)
+![Vitest Functions](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/vitest-functions.json)
+![Vitest Lines](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/vitest-lines.json)
+
+![Playwright Coverage](https://img.shields.io/badge/🎭Playwright-coverage-orange?style=social)
+![Playwright Statements](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/playwright-statements.json)
+![Playwright Branches](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/playwright-branches.json)
+![Playwright Functions](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/playwright-functions.json)
+![Playwright Lines](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/USER/REPO/main/.github/badges/playwright-lines.json)
+
 </div>
 
 > Un punto de partida minimalista y moderno para frontends. Construido con Next.js 16, React 19, TypeScript, y Tailwind CSS. Incluye soporte multiidioma, temas personalizados, y gradientes animados.

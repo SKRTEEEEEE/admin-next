@@ -16,6 +16,20 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/webp', 'image/avif'],
   },
+  // Exclude problematic files from bundling
+  serverExternalPackages: ['thread-stream'],
+  webpack: (config, { isServer }) => {
+    // Exclude test files and non-JS assets from node_modules
+    config.module.rules.push({
+      test: /node_modules\/.*\.(test|spec)\.(js|ts|mjs)$/,
+      loader: 'ignore-loader',
+    });
+    config.module.rules.push({
+      test: /node_modules\/.*\.(md|sh|zip|LICENSE)$/,
+      loader: 'ignore-loader',
+    });
+    return config;
+  },
 };
  
 const withNextIntl = createNextIntlPlugin("./src/lib/i18n/request.ts");

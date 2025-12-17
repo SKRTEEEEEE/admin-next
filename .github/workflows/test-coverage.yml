@@ -13,15 +13,14 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-    # ✅ CRÍTICO: Checkout con submódulos RECURSIVOS
-    - uses: actions/checkout@v5
+    - name: Checkout 🛬
+      uses: actions/checkout@v5
       with:
         submodules: recursive
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    # ✅ Instalar dependencias en submódulos anidados
-    - name: Initialize submodules
+    - name: Initialize submodules 📦
       run: |
         git submodule update --init --recursive
         git submodule foreach --recursive 'npm ci || echo "No package.json in $(pwd)"'
@@ -31,12 +30,13 @@ jobs:
         rm -rf docs/test-results docs/coverage .nyc_output || true
         mkdir -p docs/test-results docs/coverage/vitest docs/coverage/playwright
 
-    - uses: actions/setup-node@v6
+    - name: Setup Node ⚙️
+      uses: actions/setup-node@v6
       with:
         node-version: lts/*
         cache: 'npm'
 
-    - name: Install dependencies
+    - name: Install dependencies 📩
       run: npm ci
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -70,12 +70,12 @@ jobs:
     # ============================================================
     # PLAYWRIGHT - Tests con servidor
     # ============================================================
-    - name: Build Next.js
+    - name: Build Next.js 📦
       run: npm run build
       env:
         NODE_ENV: production
 
-    - name: Start Next.js server
+    - name: Start Next.js server 🚀
       run: |
         npm run start &
         echo $! > .next-server.pid
@@ -84,7 +84,7 @@ jobs:
         NEXT_PUBLIC_API_MOCKING: "enabled"
         PORT: 3000
     
-    - name: Wait for server to be ready
+    - name: Wait for server ⏳
       run: |
         echo "⏳ Waiting for Next.js server..."
         
@@ -260,6 +260,98 @@ jobs:
           "label": "Coverage (Lines)",
           "message": "${{ steps.coverage.outputs.combined_lines }}%",
           "color": "${LN_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        # Vitest specific badges
+        V_ST_COLOR=$(get_color "${{ steps.coverage.outputs.vitest_statements }}")
+        V_BR_COLOR=$(get_color "${{ steps.coverage.outputs.vitest_branches }}")
+        V_FN_COLOR=$(get_color "${{ steps.coverage.outputs.vitest_functions }}")
+        V_LN_COLOR=$(get_color "${{ steps.coverage.outputs.vitest_lines }}")
+
+        cat > .github/badges/vitest-statements.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Vitest (Statements)",
+          "message": "${{ steps.coverage.outputs.vitest_statements }}%",
+          "color": "${V_ST_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/vitest-branches.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Vitest (Branches)",
+          "message": "${{ steps.coverage.outputs.vitest_branches }}%",
+          "color": "${V_BR_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/vitest-functions.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Vitest (Functions)",
+          "message": "${{ steps.coverage.outputs.vitest_functions }}%",
+          "color": "${V_FN_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/vitest-lines.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Vitest (Lines)",
+          "message": "${{ steps.coverage.outputs.vitest_lines }}%",
+          "color": "${V_LN_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        # Playwright specific badges
+        P_ST_COLOR=$(get_color "${{ steps.coverage.outputs.playwright_statements }}")
+        P_BR_COLOR=$(get_color "${{ steps.coverage.outputs.playwright_branches }}")
+        P_FN_COLOR=$(get_color "${{ steps.coverage.outputs.playwright_functions }}")
+        P_LN_COLOR=$(get_color "${{ steps.coverage.outputs.playwright_lines }}")
+
+        cat > .github/badges/playwright-statements.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Playwright (Statements)",
+          "message": "${{ steps.coverage.outputs.playwright_statements }}%",
+          "color": "${P_ST_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/playwright-branches.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Playwright (Branches)",
+          "message": "${{ steps.coverage.outputs.playwright_branches }}%",
+          "color": "${P_BR_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/playwright-functions.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Playwright (Functions)",
+          "message": "${{ steps.coverage.outputs.playwright_functions }}%",
+          "color": "${P_FN_COLOR}",
+          "style": "flat-square"
+        }
+        EOF
+
+        cat > .github/badges/playwright-lines.json << EOF
+        {
+          "schemaVersion": 1,
+          "label": "Playwright (Lines)",
+          "message": "${{ steps.coverage.outputs.playwright_lines }}%",
+          "color": "${P_LN_COLOR}",
           "style": "flat-square"
         }
         EOF

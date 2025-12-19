@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { creatorData } from "@/lib/data";
 import { adminSurfaces } from "@/core/admin/surfaces";
-import { fetchLandingProjects } from "@/core/application/services/project.service";
+import { fetchLandingProjects } from "@/core/presentation/controllers/project.controller";
 
 type DiagnosticId = "robots" | "i18n" | "themes" | "actions";
 

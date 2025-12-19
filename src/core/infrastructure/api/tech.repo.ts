@@ -1,8 +1,8 @@
-import { ResFlow } from "@skrteeeeee/profile-domain";
+import { ResFlow, createDomainError, ErrorCodes } from "@skrteeeeee/profile-domain";
 import { ApiBaseRepository, Modules } from "@log-ui/core/infrastructure/api/base.repository";
 
 import { ReadAllParams } from "@skrteeeeee/profile-domain";
-import type { Lib, ReadAllFlattenTechsRes, ReadCategoryTechsRes, TechInterface } from "@/core/application/interface/tech.interface";
+import type { Lib, ReadAllFlattenTechsRes, ReadCategoryTechsRes, TechInterface } from "@/core/application/interfaces/entities/tech.interface";
 import { FullTechData } from "@skrteeeeee/profile-domain";
 // src/core/infrastructure/api/tech.repository(-or->service).ts
 export class TechApiRepository
@@ -20,6 +20,15 @@ export class TechApiRepository
       method: "GET",
       headers: { "Content-type": "application/json" },
     });
+    if (!response.ok) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        TechApiRepository,
+        "readDb",
+        "tryAgainOrContact",
+        { entity: "techs (db)", optionalMessage: `HTTP ${response.status}: ${response.statusText}` }
+      );
+    }
     return response.json();
   }
 
@@ -30,6 +39,15 @@ export class TechApiRepository
       method: "GET",
       headers: { "Content-type": "application/json" },
     });
+    if (!response.ok) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        TechApiRepository,
+        "readFlatten",
+        "tryAgainOrContact",
+        { entity: "techs (flatten)", optionalMessage: `HTTP ${response.status}: ${response.statusText}` }
+      );
+    }
     return response.json();
   }
 
@@ -40,6 +58,15 @@ export class TechApiRepository
       method: "GET",
       headers: { "Content-type": "application/json" },
     });
+    if (!response.ok) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        TechApiRepository,
+        "readCategory",
+        "tryAgainOrContact",
+        { entity: "techs (category)", optionalMessage: `HTTP ${response.status}: ${response.statusText}` }
+      );
+    }
     return response.json();
   }
 
@@ -50,11 +77,18 @@ export class TechApiRepository
       method: "GET",
       headers: { "Content-type": "application/json" },
     });
+    if (!response.ok) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        TechApiRepository,
+        "readFull",
+        "tryAgainOrContact",
+        { entity: "techs (full)", optionalMessage: `HTTP ${response.status}: ${response.statusText}` }
+      );
+    }
     return response.json();
   }
 }
 
 // src/core/infrastructure/api/tech.singleton.ts
 export const techApiRepository = new TechApiRepository(process.env.TEST_ENV !== "development" ? "https://kind-creation-production.up.railway.app" : "http://localhost:3001");
-
-console.log("test_env: ",process.env.TEST_ENV)

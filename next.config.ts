@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
   // Optimize images
   images: {
     formats: ['image/webp', 'image/avif'],
+    remotePatterns: [
+      new URL('https://utfs.io/**'),
+    ]
   },
   // Exclude problematic files from bundling
   serverExternalPackages: ['thread-stream'],

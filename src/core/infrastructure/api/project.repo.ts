@@ -1,8 +1,8 @@
 import {
   Project,
   ProjectInterface,
-} from "@/core/application/interface/project.interface";
-import { ResFlow } from "@skrteeeeee/profile-domain";
+} from "@/core/application/interfaces/entities/project.interface";
+import { ResFlow, createDomainError, ErrorCodes } from "@skrteeeeee/profile-domain";
 import { ApiBaseRepository, Modules } from "@log-ui/core/infrastructure/api/base.repository";
 
 export class ProjectApiRepository
@@ -19,6 +19,15 @@ export class ProjectApiRepository
       method: "GET",
       headers: { "Content-type": "application/json" },
     });
+    if (!response.ok) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        ProjectApiRepository,
+        "readEjemplo",
+        "tryAgainOrContact",
+        { entity: "projects", optionalMessage: `HTTP ${response.status}: ${response.statusText}` }
+      );
+    }
     return response.json();
   }
 
@@ -29,6 +38,15 @@ export class ProjectApiRepository
       method: "GET",
       headers: { "Content-type": "application/json" },
     });
+    if (!response.ok) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        ProjectApiRepository,
+        "readById",
+        "tryAgainOrContact",
+        { entity: "project", optionalMessage: `HTTP ${response.status}: ${response.statusText} (id: ${id})` }
+      );
+    }
     return response.json();
   }
 }

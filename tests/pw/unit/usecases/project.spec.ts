@@ -52,8 +52,8 @@ test.describe("Project Use Cases", () => {
       const useCasePath = path.join(process.cwd(), "src", "core", "application", "usecases", "entities", "project.ts");
       const content = fs.readFileSync(useCasePath, "utf-8");
       
-      // Verify it imports the repository
-      expect(content).toContain("projectApiRepository");
+      // Verify it imports from _project-basic (reorganized structure)
+      expect(content).toContain("from \"./_project-basic\"");
     });
   });
 });

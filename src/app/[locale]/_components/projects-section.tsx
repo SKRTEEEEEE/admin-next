@@ -1,6 +1,8 @@
 import { getProjectsForLandingUC } from "@/core/application/usecases/entities/project";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
+import { analyzeError } from "@log-ui/lib/error-serialization";
+import { ProjectsSectionFallback } from "./projects-section-fallback";
 
 type ProjectsSectionProps = {
   locale: string;
@@ -8,23 +10,26 @@ type ProjectsSectionProps = {
 
 /**
  * Server Component que obtiene proyectos del backend
- * Se puede envolver con Suspense para mostrar skeleton mientras carga
+ * Maneja errores mostrando toast + fallback (no rompe la UI)
  */
 export async function ProjectsSection({ locale }: ProjectsSectionProps) {
   const t = await getTranslations("admin");
-  const projects = await getProjectsForLandingUC(locale);
+  
+  try {
+    const projects = await getProjectsForLandingUC(locale);
+    
+    // Si no hay proyectos (pero no hubo error), mostrar empty state sin toast
+    if (projects.length === 0) {
+      return (
+        <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
+          {t("projects.empty")}
+        </div>
+      );
+    }
 
-  if (projects.length === 0) {
     return (
-      <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
-        {t("projects.empty")}
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid gap-4 md:grid-cols-3">
-      {projects.slice(0, 3).map((project) => (
+      <div className="grid gap-4 md:grid-cols-3">
+        {projects.slice(0, 3).map((project) => (
         <Card
           key={project.id}
           className="admin-project border-border/30 bg-card/40 backdrop-blur"
@@ -76,9 +81,30 @@ export async function ProjectsSection({ locale }: ProjectsSectionProps) {
             )}
           </CardContent>
         </Card>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    );
+  } catch (error) {
+    // Analizar el error para decidir qué hacer
+    const { action, serializedError } = analyzeError(error);
+    
+    // Si friendlyDesc === undefined → ErrorBoundary (servidor completamente caído)
+    if (action === 'throw') {
+      throw error;
+    }
+    
+    // Si friendlyDesc === 'd' → Silencioso (solo empty state, sin toast)
+    if (action === 'silent') {
+      return (
+        <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
+          {t("projects.empty")}
+        </div>
+      );
+    }
+    
+    // Si friendlyDesc !== undefined → Fallback con toast
+    return <ProjectsSectionFallback error={serializedError!} />;
+  }
 }
 
 /**

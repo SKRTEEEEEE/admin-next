@@ -146,23 +146,29 @@ export const getProjectsForLandingUC = async (locale?: string): Promise<LandingP
   
   try {
     const response = await readProjectUC();
-    if (!response.success) return [];
-    // LO QUE ME GUSTARIA ->
-    // if (!response.success) throw createDomainError( ... );
-    // Si -> Error.friendlyDesc === "undefined" -> Throw Error 'normal' (Server down -> ErrorBoundary)
-    // Si -> Error.friendlyDesc !== "undefined" -> Mostrar friendlyDesc en UI en FORMATO TOAST
-    /*
-    BS - v1: El problema es que en este punto no tengo acceso a la UI (estoy en Capa del Servidor)
-    - Tampoco quiero modificar la respuesta del backend, pq en algunos de casos el devuelve un array vacío si no hay datos. También devuelve los errores siguiendo el estandard de DomainError, por lo que si no esta Authenticado devuelve estandard, etc...
-    SOLUCIONES:
-    1) Middleware: 
-      - Capturar todos los errores DomainError y devolver una respuesta estandarizada que la UI pueda interpretar
-      - Modificar de alguna manera el hecho de que no salte ErrorBoundary si no es friendlyDesc === "undefined"
-    2) Otras ideas? creo que el resto me obligan a toquetear la respuesta del backend y no quiero
-    */
+    
+    // Si el backend responde con error, lanzar DomainError
+    if (!response.success) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        getProjectsForLandingUC,
+        "getProjectsForLandingUC",
+        { 
+          es: "No se pudieron cargar los proyectos. Intenta más tarde.",
+          en: "Could not load projects. Try again later.",
+          ca: "No s'han pogut carregar els projectes. Prova més tard.",
+          de: "Projekte konnten nicht geladen werden. Versuche es später erneut."
+        }, // friendlyDesc con i18n
+        { 
+          entity: "projects",
+          optionalMessage: response.message || "Backend returned unsuccessful response"
+        }
+      );
+    }
+    
     return mapProjects(response.data, normalizedLocale);
-  } catch {
-    // Landing page should not fail - return empty array
-    return [];
+  } catch (error) {
+    // Re-lanzar error para que ProjectsSection lo maneje
+    throw error;
   }
 };

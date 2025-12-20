@@ -7,6 +7,7 @@
 1. **`createDomainError`** - Para errores críticos que deben detener la ejecución
 2. **Graceful Degradation** - Para errores no críticos que permiten continuar
 3. **`console.error + fallback + toast()`** - Para errores de cliente que no deben romper la UI
+    - **Crear SIEMPRE `<ClientComponentFallback/>`:** Componente de Cliente con **`skeleton` + `toast()`**
 
 - **EXCEPCIÓN: /components/ui/** - Esto son componentes de 'libraría' que mantendremos tal como están.
 
@@ -61,30 +62,56 @@ export const getCurrentUserUC = async () => {
 
 ### 2. Repositories (Capa de Infraestructura)
 
-**Regla:** SIEMPRE usar `createDomainError` para errores de backend
+**Regla:** SIEMPRE usar `createDomainError` y capturar TODOS los errores (red + HTTP)
 
 ```typescript
 // ✅ CORRECTO
-async readById(id: string): Promise<ResFlow<Project>> {
-  const response = await fetch(`${this.baseUrl}/project/${id}`);
-  if (!response.ok) {
+async readEjemplo(): Promise<ResFlow<Project[]>> {
+  try {
+    const response = await fetch(`${this.baseUrl}/project`);
+    
+    if (!response.ok) {
+      throw createDomainError(
+        ErrorCodes.DATABASE_FIND,
+        ProjectApiRepository,
+        "readEjemplo",
+        "tryAgainOrContact", // friendlyDesc predefinido
+        { entity: "projects", optionalMessage: `HTTP ${response.status}` }
+      );
+    }
+    
+    return response.json();
+  } catch (error) {
+    // Si ya es DomainError, re-lanzar
+    if (error && typeof error === 'object' && 'type' in error) {
+      throw error;
+    }
+    
+    // Error de red (ECONNREFUSED, timeout, etc.)
     throw createDomainError(
       ErrorCodes.DATABASE_FIND,
       ProjectApiRepository,
-      "readById",
-      "tryAgainOrContact",
-      { 
-        entity: "project", 
-        optionalMessage: `HTTP ${response.status}: ${response.statusText}` 
-      }
+      "readEjemplo",
+      {
+        es: "No se pudo conectar con el servidor. Intenta más tarde.",
+        en: "Could not connect to server. Try again later.",
+        ca: "No s'ha pogut connectar amb el servidor. Prova més tard.",
+        de: "Verbindung zum Server fehlgeschlagen."
+      }, // friendlyDesc con IntlBase para errores de red
+      { entity: "projects", optionalMessage: error instanceof Error ? error.message : String(error) }
     );
   }
-  return response.json();
 }
 
 // ❌ INCORRECTO
-throw new Error(`HTTP ${response.status}`); // NO hacer esto
+const response = await fetch(...); // Sin try/catch → Error no controlado
+throw new Error("Failed"); // NO usar Error nativo
 ```
+
+**Por qué capturar errores de red:**
+- `fetch` lanza `TypeError` cuando no puede conectar (ECONNREFUSED)
+- Estos errores NO tienen `friendlyDesc` → causarían ErrorBoundary
+- Envolvemos en try/catch para convertirlos a DomainError con i18n
 
 ---
 
@@ -232,29 +259,44 @@ Cuando tengas que manejar un error:
 ## ❌ Anti-Patrones (NO hacer)
 
 ```typescript
-// ❌ 1. throw new Error en runtime
-throw new Error("Something went wrong");
-
-// ❌ 2. throw nativo de biblioteca sin convertir
-throw new UploadThingError("Unauthorized");
-
-// ❌ 3. throw en Client Component
-if (!context) throw new Error("Invalid context");
-
-// ❌ 4. catch sin re-lanzar (tragar errores)
-try {
-  await fetch();
-} catch {
-  // Silencio total - NO hacer esto en server
+// ❌ 1. fetch sin try/catch en repository
+async readData() {
+  const response = await fetch(...); // Sin try/catch → error de red no controlado
+  return response.json();
 }
 
-// ❌ 5. Mezclar estrategias inconsistentemente
-try {
-  const data = await fetch();
-  if (!data) throw new Error("Not found"); // Inconsistente
-} catch {
-  return null; // No coincide con el throw de arriba
+// ❌ 2. Devolver valores seguros en use case (return [])
+export const getProjectsUC = async () => {
+  try {
+    const response = await readProject();
+    if (!response.success) return []; // ❌ NO - usar throw createDomainError
+  } catch {
+    return []; // ❌ NO - re-lanzar el error
+  }
+};
+
+// ❌ 3. error opcional en Client Fallback
+export function MyFallback({ error }: { error?: SerializedError }) {
+  // ❌ error debe ser obligatorio
 }
+
+// ❌ 4. useEffect en lugar de useToastOnce
+useEffect(() => {
+  toast(message);
+}, []); // ❌ Usar useToastOnce hook
+
+// ❌ 5. friendlyDesc sin i18n en use case
+throw createDomainError(
+  ErrorCodes.DATABASE_FIND,
+  myUC,
+  "myUC",
+  "Error loading data", // ❌ String sin i18n
+  { entity: "data" }
+);
+// ✅ CORRECTO: { es: "...", en: "...", ca: "...", de: "..." }
+
+// ❌ 6. throw new Error
+throw new Error("Something went wrong"); // ❌ Usar createDomainError
 ```
 
 ---

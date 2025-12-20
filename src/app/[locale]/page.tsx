@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/card";
 import { creatorData } from "@/lib/data";
 import { adminSurfaces } from "@/core/admin/surfaces";
-import { getProjectsForLandingUC } from "@/core/application/usecases/entities/project";
 import { ErrorToastDemo } from "@log-ui/components/examples/error-toast-demo";
+import { Suspense } from "react";
+import { ProjectsSection, ProjectsSkeleton } from "./_components/projects-section";
 
 type DiagnosticId = "robots" | "i18n" | "themes" | "actions";
 
@@ -35,7 +36,6 @@ interface AdminHomeProps {
 export default async function AdminHome({ params }: AdminHomeProps) {
   const { locale } = await params;
   const t = await getTranslations("admin");
-  const projects = await getProjectsForLandingUC(locale);
 
   return (
     <main className="admin-shell relative isolate min-h-dvh overflow-hidden bg-background text-foreground">
@@ -191,67 +191,9 @@ export default async function AdminHome({ params }: AdminHomeProps) {
             </h2>
             <p className="text-muted-foreground">{t("projects.description")}</p>
           </div>
-          {projects.length === 0 ? (
-            <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
-              {t("projects.empty")}
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-3">
-              {projects.slice(0, 3).map((project) => (
-                <Card
-                  key={project.id}
-                  className="admin-project border-border/30 bg-card/40 backdrop-blur"
-                >
-                  <CardHeader>
-                    <CardTitle className="text-lg text-foreground">
-                      {project.title}
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground">
-                      {project.summary}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 text-sm text-muted-foreground">
-                    {project.keys.length > 0 && (
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.3em] text-foreground/70">
-                          {t("projects.keysLabel")}
-                        </p>
-                        <ul className="mt-2 space-y-1">
-                          {project.keys.slice(0, 3).map((keyTitle, index) => (
-                            <li
-                              key={`${project.id}-key-${index}`}
-                              className="text-foreground/80"
-                            >
-                              {keyTitle}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {project.techBadges.length > 0 && (
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.3em] text-foreground/70">
-                          {t("projects.techsLabel")}
-                        </p>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {project.techBadges
-                            .slice(0, 6)
-                            .map((badge, index) => (
-                              <span
-                                key={`${project.id}-tech-${index}`}
-                                className="rounded-full border border-border/40 px-3 py-1 text-xs text-foreground/80"
-                              >
-                                {badge}
-                              </span>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <Suspense fallback={<ProjectsSkeleton />}>
+            <ProjectsSection locale={locale} />
+          </Suspense>
         </section>
         <section>
           <ErrorToastDemo />

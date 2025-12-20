@@ -2,11 +2,19 @@ import { getProjectsForLandingUC } from "@/core/application/usecases/entities/pr
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
 import { analyzeError } from "@log-ui/lib/error-serialization";
-import { ProjectsSectionFallback } from "./projects-section-fallback";
+import { SectionFallbackProvider } from "@log-ui/components/section-fallback-provider";
 
 type ProjectsSectionProps = {
   locale: string;
 };
+async function ProjectSectionSkeleton () {
+  const t = await getTranslations("admin");
+  return (
+        <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
+          {t("projects.empty")}
+        </div>
+      );
+}
 
 /**
  * Server Component que obtiene proyectos del backend
@@ -21,9 +29,7 @@ export async function ProjectsSection({ locale }: ProjectsSectionProps) {
     // Si no hay proyectos (pero no hubo error), mostrar empty state sin toast
     if (projects.length === 0) {
       return (
-        <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
-          {t("projects.empty")}
-        </div>
+        <ProjectSectionSkeleton/>
       );
     }
 
@@ -85,25 +91,31 @@ export async function ProjectsSection({ locale }: ProjectsSectionProps) {
       </div>
     );
   } catch (error) {
-    // Analizar el error para decidir qué hacer
-    const { action, serializedError } = analyzeError(error);
+    // analyzeError lanza si: no es DomainError o friendlyDesc === undefined
+    // Override del título para contexto específico
+    const serializedError = analyzeError(
+      error,
+      {
+        es: "Ups, Error cargando proyectos",
+        en: "Ups, Error loading projects",
+        ca: "Ups, Error carregant projectes",
+        de: "Ups, Fehler beim Laden der Projekte"
+      }
+    );
     
-    // Si friendlyDesc === undefined → ErrorBoundary (servidor completamente caído)
-    if (action === 'throw') {
-      throw error;
-    }
-    
-    // Si friendlyDesc === 'd' → Silencioso (solo empty state, sin toast)
-    if (action === 'silent') {
+    // Si description === 'd' → Silencioso (solo empty state, sin toast)
+    if (serializedError.description.es === 'd') {
       return (
-        <div className="rounded-xl border border-border/40 bg-card/30 px-6 py-8 text-sm text-muted-foreground">
-          {t("projects.empty")}
-        </div>
+        <ProjectSectionSkeleton/>
       );
     }
     
-    // Si friendlyDesc !== undefined → Fallback con toast
-    return <ProjectsSectionFallback error={serializedError!} />;
+    // Fallback con toast + empty state usando SectionFallbackProvider
+    return (
+      <SectionFallbackProvider error={serializedError}>
+        <ProjectSectionSkeleton/>
+      </SectionFallbackProvider>
+    );
   }
 }
 

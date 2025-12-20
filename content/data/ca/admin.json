@@ -81,6 +81,23 @@
         "nest": "Backend Nest",
         "profile": "Frontend de perfil"
       }
+    },
+    "errorDemo": {
+      "title": "Demo del Sistema de Toast d'Errors",
+      "description": "Prova els diferents tipus d'errors DomainError amb títol + descripció + icona",
+      "buttons": {
+        "credentials": "Credencials (string predefinit)",
+        "custom": "Personalitzat (meta.icon explícit)",
+        "network": "Xarxa (meta.desc amb \"ups\")"
+      },
+      "info": {
+        "title": "Sistema amb Enum ErrorIcon:",
+        "feature1": "Títol + Descripció + Icona automàtica a cada toast",
+        "iconCredentials": "ShieldX (autenticació)",
+        "iconServer": "ServerCrash (servidor/xarxa)",
+        "iconGeneric": "AlertCircle (genèric)",
+        "feature5": "Especificar amb meta.icon o usar strings predefinits"
+      }
     }
   }
 }

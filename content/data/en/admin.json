@@ -81,6 +81,23 @@
         "nest": "Profile Nest backend",
         "profile": "Profile frontend"
       }
+    },
+    "errorDemo": {
+      "title": "Error Toast System Demo",
+      "description": "Test different DomainError types with title + description + icon",
+      "buttons": {
+        "credentials": "Credentials (predefined string)",
+        "custom": "Custom (explicit meta.icon)",
+        "network": "Network (meta.desc with \"oops\")"
+      },
+      "info": {
+        "title": "ErrorIcon Enum System:",
+        "feature1": "Title + Description + Auto icon in each toast",
+        "iconCredentials": "ShieldX (authentication)",
+        "iconServer": "ServerCrash (server/network)",
+        "iconGeneric": "AlertCircle (generic)",
+        "feature5": "Specify with meta.icon or use predefined strings"
+      }
     }
   }
 }

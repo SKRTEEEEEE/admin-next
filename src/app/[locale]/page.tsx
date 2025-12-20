@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { creatorData } from "@/lib/data";
 import { adminSurfaces } from "@/core/admin/surfaces";
-import { ErrorToastDemo } from "@log-ui/components/examples/error-toast-demo";
+import { ErrorToastDemo } from "@/app/[locale]/_components/error-toast-demo";
 import { Suspense } from "react";
 import { ProjectsSection, ProjectsSkeleton } from "./_components/projects-section";
 

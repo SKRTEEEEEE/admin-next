@@ -81,6 +81,23 @@
         "nest": "Nest-Backend",
         "profile": "Profil-Frontend"
       }
+    },
+    "errorDemo": {
+      "title": "Fehler-Toast-System Demo",
+      "description": "Testen Sie verschiedene DomainError-Typen mit Titel + Beschreibung + Symbol",
+      "buttons": {
+        "credentials": "Anmeldedaten (vordefinierter String)",
+        "custom": "Benutzerdefiniert (explizites meta.icon)",
+        "network": "Netzwerk (meta.desc mit \"hoppla\")"
+      },
+      "info": {
+        "title": "ErrorIcon Enum System:",
+        "feature1": "Titel + Beschreibung + Auto-Symbol in jedem Toast",
+        "iconCredentials": "ShieldX (Authentifizierung)",
+        "iconServer": "ServerCrash (Server/Netzwerk)",
+        "iconGeneric": "AlertCircle (generisch)",
+        "feature5": "Mit meta.icon angeben oder vordefinierte Strings verwenden"
+      }
     }
   }
 }

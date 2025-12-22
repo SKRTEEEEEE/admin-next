@@ -3,18 +3,12 @@
 > Micro-frontend template Next.js 16 con clean architecture + log-ui-ts submodule
 
 ## 🎯 Contexto del Proyecto
-Fíjate en mi carpeta/proyecto en ./admin-next, si te fijas este es una copia de agora-next/profile-next. La question de este proyecto esque estoy migrando de un frontend/backend nextjs (profile-page), a una estructura de backend monolitico (profile-nest) y frontends micro (admin, profile, agora). 
-- **`admin-next` = template base para nuevos micro-frontend**
-- En el issue de ahora, debes centrarte en la parte de admin-next y log-ui-ts, para crear el **template definitivo para los nuevos micro-frontend de este proyecto**
 
-- Estos micro-frontend's comparten dominio con './profile-domain' como package y con el backend
-- Estos micro-frontend's comparten las funcionalidades con ./*/log-ui-ts/ como submodule, [ver README.md](../log-ui-ts/README.md)
+**[TODO: NOMBRE DEL PROYECTO]** es un micro-frontend basado en el template `admin-next`:
 
-- Tienes un **reporte MUY IMPORTANTE de la arquitectura** en [./docs/cleanarch.md](../../docs/cleanarch.md)
-- Tienes un reporte del test en [./admin-next/test/README.md](../tests/README.md)
-- Tienes un servidor del backend corriendo en :3001
-- Tienes un servidor del frontend (`admin-next`) en :3000, en modo desarrollo (`npm run dev`)
-- Tienes el 'standard de error management' en [./admin-next/log-ui-ts/error-handling-quick-guide.md](../log-ui-ts/error-handling-quick-guide.md)
+- [TODO: Propósito principal del micro-frontend]
+- [TODO: Usuarios objetivo o casos de uso]
+- Integración con backend monolítico (`profile-nest` en puerto :3001)
 
 ## ⚠️ Flujo de Validación (OBLIGATORIO)
 > *Antes de dar por terminada un flujo de tareas(o tarea/session), asegúrate de realizar las siguientes acciones *
@@ -27,6 +21,9 @@ Fíjate en mi carpeta/proyecto en ./admin-next, si te fijas este es una copia de
 ### Comprobar Test completo
 - `npm run test:cov`
 ### Actualizar documentación
+### [TODO: Otros requerimientos]
+- *Explica todo lo que desees sobre esta acción de validación*
+
 
 
 ## ✏️ Flujo de Git (OBLIGATORIO)
@@ -49,7 +46,7 @@ Procedimiento exacto para hacer commit:
 - [TODO: Archivos principales (general): `docs/dev/arquitectura-final.gpt.md` y `docs/dev/workflow.gpt.md` - ~150 lineas.]
 - Archivos principales (agente): `docs/dev/agent/**` - *archivos necesarios para mantener coherencia en el desarrollo* - ~80-120 lineas, max 200 lineas.
 - Modificar archivos principales (general i agent) antes de hacer commit si se considera necesario
-- Modificar **SIEMPRE al implementar un feat**, antes de hacer commit los archivos principales (generales) - `docs/dev/arquitectura-final.gpt.md` y `docs/dev/workflow.gpt.md` 
+- Modificar **SIEMPRE** al implementar un feat, antes de hacer commit los archivos principales (generales) - `docs/dev/arquitectura-final.gpt.md` y `docs/dev/workflow.gpt.md` 
 - **Si es repetitivo o esta en otro documento, no se debe escribir de nuevo, se debe hacer una referencia markdown al documento que lo contiene**
 - **Nunca escribas código** en los archivos principales (agente): `docs/dev/agent/**`
 ### 📒 Archivos Core - NO MODIFICAR 
@@ -57,14 +54,13 @@ Procedimiento exacto para hacer commit:
 -> __*AQUí ESTA LA INFORMACIÓN MAS REAL DEL PROYECTO, ultra-revisada/escrita por el usuario, tómalo como verdad absoluta en caso de contradicción con otro documento*__ 
 
 - **[Testing Strategy](./tests/README.md)** - Vitest + Playwright + LHCI
-- **[Clean Architecture](./docs/cleanarch.md)** - Capas (Domain, Application, Infrastructure, Presentation)
-- **[Microservices Arch](./docs/microservices-arch.md)** - Arquitectura general del monorepo
-- **[/log-ui-ts/*.md](./log-ui-ts/README.md)** - Toda la documentación de 'log-ui-ts'
+- **[Clean Architecture](../docs/cleanarch.md)** - Capas (Domain, Application, Infrastructure, Presentation)
+- **[Microservices Arch](../docs/microservices-arch.md)** - Arquitectura general del monorepo
 
-
-
+- [TODO: **[feat](./folder-example/feat)** - *Se recomienda una explicación del flujo de la aplicación detallado, puede estar separando en feats*]
 ### 📖 Archivos principales - GENERAL (Documentación Técnica)
 
+- [TODO: **[Workflow](./folder-example/workflow.gpt)** - *Se recomienda una explicación del flujo de la aplicación, para uso del agente*]
 
 ### 📋 Archivos principales - GENERAL (Documentación Desarrollo)
 

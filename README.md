@@ -156,31 +156,30 @@ npm run perf:check       # Validate thresholds + update badges
 
 
 ## 📁 Estructura del Proyecto
+> - 📚 **Full docs: See [docs/cleanarch.md](./docs/cleanarch.md)** for a complete guide of the purposed structure
+> - 📚 **Full docs**: See [tests/README.md](tests/README.md) for complete testing guide
+> - 📚 **Full docs**: See [log-ui-ts/README.md](./log-ui-ts/README.md) for complete log-ui-ts submodule guide
+
+
+
 ```
-admin-next/
-├─ log-ui-ts/                         # Submodule compartido (auth, components, core)
-├─ content/data/{locale}/
-│  ├─ admin.json                      # Textos de la landing por idioma
-│  └─ common.json                     # Traducciones comunes
+[your-project]/
+├─ log-ui-ts/                    # Submodule (NO modificar sin confirmar)
+├─ content/data/{locale}/        # i18n (ÚNICA fuente de verdad)
 ├─ src/
-│  ├─ app/
-│  │  ├─ [locale]/
-│  │  │  ├─ layout.tsx                # ThemeProvider + NextIntl
-│  │  │  └─ page.tsx                  # Vista principal (hero + status + diagnostics)
-│  │  └─ api/admin/status/route.ts    # API de ejemplo para monitoreo
+│  ├─ app/[locale]/             # App Router
+│  │  ├─ _componentes/          # Componentes página-específicos
+│  │  └─ [RUTA]/_componentes/   # Componentes ruta-específicos
 │  ├─ components/
-│  │  ├─ admin/                       # Componentes específicos del template
-│  │  ├─ ui/                          # shadcn/ui components
-│  │  └─ mode-toggle.tsx              # Theme switcher (6 presets x 2 modos)
-│  ├─ core/
-│  │  ├─ admin/surfaces.ts            # Mock data para API
-│  │  ├─ application/                 # Use cases e interfaces
-│  │  └─ infrastructure/              # Repositorios API
-│  └─ lib/
-│     ├─ i18n/routing.ts              # Rutas i18n (/, /gradients)
-│     ├─ utils.ts                     # Utilidades (gradients, cn)
-│     └─ metadata.ts                  # SEO helpers
-└─ tests/                             # Specs por tipo (unit/component/api/e2e)
+│  │  ├─ [DOMINIO]/             # Reutilizables proyecto
+│  │  └─ ui/                    # shadcn/ui (NO modificar estructura)
+│  ├─ core/                     # *descrito en /docs/cleanarch.md
+│  └─ lib/                      # i18n, utils, metadata
+├─ tests/                       # *descrito en /test/README.md
+│  ├─ vitest/                   # unit, api, component
+│  └─ pw/                       # component, integration, e2e, performance
+├─ docs/                        # Documentación del proyecto
+└─ .github/                     # Github Files
 ```
 
 ## 📝 License

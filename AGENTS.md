@@ -46,7 +46,7 @@ Procedimiento exacto para hacer commit:
 
 ## 📃 Documentación
 - Archivos core (documentación base - NO MODIFICAR, prohibidos ): `AGENTS.md`, `README.md`, `docs/*.md/` (los de la raíz de /docs/)
-- [TODO: Archivos principales (general): `docs/dev/arquitectura-final.gpt.md` y `docs/dev/workflow.gpt.md` - ~150 lineas.]
+- *[TODO: Archivos principales (general): `docs/dev/arquitectura-final.gpt.md` y `docs/dev/workflow.gpt.md` - ~150 lineas.]*
 - Archivos principales (agente): `docs/dev/agent/**` - *archivos necesarios para mantener coherencia en el desarrollo* - ~80-120 lineas, max 200 lineas.
 - Modificar archivos principales (general i agent) antes de hacer commit si se considera necesario
 - Modificar **SIEMPRE al implementar un feat**, antes de hacer commit los archivos principales (generales) - `docs/dev/arquitectura-final.gpt.md` y `docs/dev/workflow.gpt.md` 
@@ -59,7 +59,10 @@ Procedimiento exacto para hacer commit:
 - **[Testing Strategy](./tests/README.md)** - Vitest + Playwright + LHCI
 - **[Clean Architecture](./docs/cleanarch.md)** - Capas (Domain, Application, Infrastructure, Presentation)
 - **[Microservices Arch](./docs/microservices-arch.md)** - Arquitectura general del monorepo
-- **[/log-ui-ts/*.md](./log-ui-ts/README.md)** - Toda la documentación de 'log-ui-ts'
+- **[/log-ui-ts/*.md](./log-ui-ts/README.md)** - Toda la documentación de 'log-ui-ts' folder
+- **[README](../README.md)**
+- **[AGENTS](../AGENTS.md)**
+- **[docs proyecto: ./docs/*.md](./docs/): todos los archivos que cuelgan directamente de ./docs/**
 
 
 

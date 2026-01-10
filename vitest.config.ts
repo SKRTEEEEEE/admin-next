@@ -32,7 +32,6 @@ export default defineConfig({
         'src/lib/i18n/**/*', 
       ],
     },
-
   },
   resolve: {
     alias: {

@@ -29,7 +29,10 @@
       "@log-ui/*": [
         "./log-ui-ts/*"
       ]
-    }
+    },
+    "types": [
+      "vitest/globals"
+    ]
   },
   "include": [
     "next-env.d.ts",

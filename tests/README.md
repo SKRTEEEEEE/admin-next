@@ -111,8 +111,12 @@ npm run vitest           # Watch mode
 npm run vitest:run       # Single run
 npm run vitest:cov       # Con coverage
 npm run vitest:ui        # UI interactiva
-
-# Playwright
+ 
+ # Vitest log-ui-ts
+ npm run vitest:run:l-ui  # Ejecución única (submódulo)
+ npm run vitest:cov:l-ui  # Coverage con thresholds (submódulo)
+ 
+ # Playwright
 npm run pw               # Todos los tests
 npm run pw:int           # Solo integration
 npm run pw:e2e           # Solo e2e
@@ -132,7 +136,8 @@ npm run perf:check       # Validar + badges
 
 | Archivo | Propósito |
 |---------|-----------|
-| `vitest.config.ts` | Vitest + coverage thresholds |
+| `vitest.config.ts` | Vitest + coverage thresholds (global) |
+| `vitest.config.log-ui-ts.ts` | Vitest específico para el submódulo `log-ui-ts` |
 | `playwright.config.ts` | Playwright projects + webServer |
 | `.nycrc` | NYC coverage thresholds |
 | `lighthouserc.perf.json` | LHCI thresholds + URLs |

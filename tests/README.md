@@ -1,65 +1,28 @@
-# Test Configuration
+# Documentación Master de Pruebas
 
-> Sistema de testing dual (Vitest + Playwright) con coverage combinado y auditorías LHCI.
+> **Estrategia Híbrida**:  Responsabilidad segregada (Vitest vs Playwright) + Sistema de Calidad (CI/CD, Badges, LHCI).
 
+Este directorio gobierna la calidad del proyecto `admin-next`. Aquí convergen la filosofía del "Test-Padre" con la infraestructura técnica de reportes.
 
-## Arquitectura de Tests
+---
 
-| Directorio | Runner | Servidor | Propósito |
-|------------|--------|----------|-----------|
-| `vitest/unit/` | Vitest | ❌ | Funciones puras, utils |
-| `vitest/api/` | Vitest | ❌ | Data/logic de API |
-| `vitest/component/` | Vitest | ❌ | Componentes con Testing Library |
-| `pw/component/` | Playwright | ✅ | Interacciones UI (clicks, temas) |
-| `pw/integration/` | Playwright | ✅ | SSR, i18n, SEO, a11y |
-| `pw/e2e/` | Playwright | ✅ | Flujos completos de usuario |
-| `pw/performance/` | Playwright | ✅ | Web Vitals, bundle size |
+## 1. Arquitectura y Responsabilidades
 
-## Sistema de Coverage
+Dividimos el testing en dos dominios estrictos para maximizar la confianza y minimizar la fragilidad.
 
-### Thresholds
+| Dominio | Herramienta | Servidor | Objetivo | Doc |
+| :--- | :--- | :--- | :--- | :--- |
+| **Lógica & Unit** | **Vitest** | ❌ No | Validar funciones puras, componentes aislados y reglas de negocio. Rápido y determinista. | [Ver Guía](./vitest/README.md) |
+| **E2E & Humo** | **Playwright** | ✅ Sí | Validar que la app *funciona* para el usuario. Navegación, i18n, flujos críticos. | [Ver Guía](./pw/README.md) |
 
-| Runner | Statements | Branches | Functions | Lines |
-|--------|------------|----------|-----------|-------|
-| **Vitest** | 80% | 60% | 80% | 80% |
-| **NYC/Playwright** | 60% | 40% | 60% | 60% |
+### El "Test-Padre"
+Es el E2E crítico (`smoke/admin-workflow.spec.ts`) que valida la integridad total del sistema (Frontend + Backend simulado + Interacciones). Si este test falla, **no se despliega**.
 
-### Reportes
+---
 
-```
-docs/coverage/
-├── vitest/       # npm run vitest:cov
-└── playwright/   # npm run pw:cov (NYC)
-```
+## 2. Workflow de Calidad y CI/CD
 
-## Sistema LHCI (Lighthouse CI)
-
-### Thresholds de Categorías
-
-| Categoría | Mínimo | Nivel |
-|-----------|--------|-------|
-| Performance | 70% | error |
-| Accessibility | 90% | error |
-| SEO | 90% | error |
-| Best Practices | 90% | error |
-
-### Web Vitals
-
-| Métrica | Máximo | Descripción |
-|---------|--------|-------------|
-| FCP | 1800ms | First Contentful Paint |
-| LCP | 2500ms | Largest Contentful Paint |
-| CLS | 0.1 | Cumulative Layout Shift |
-| TBT | 250ms | Total Blocking Time |
-| SI | 3000ms | Speed Index |
-
-### Reportes
-```
-docs/lighthouse-reports/perf/   # npm run perf
-docs/badges/                    # npm run perf:check (actualiza badges)
-```
-
-## Workflow
+El pipeline asegura que cada commit cumpla estándares antes de llegar a producción.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -81,59 +44,80 @@ docs/badges/                    # npm run perf:check (actualiza badges)
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Nota: Playwright webServer
-
-```typescript
-// playwright.config.ts - CI usa dev, local usa start
-webServer: {
-  command: process.env.CI ? 'npm run dev' : 'npm run start',
-}
-```
-
-Ver [reporte detallado](../docs/reports/playwright-ci-dev-vs-prod.md) para más info.
-
-## Badges
+### Badges de Estado
+Generados automáticamente en CI para visibilidad inmediata en el README principal.
 
 | Tipo | Ubicación | Generación |
-|------|-----------|------------|
-| Coverage (media) | `.github/badges/coverage-*.json` | CI (main) |
-| Vitest | `.github/badges/vitest-*.json` | CI (main) |
-| Playwright | `.github/badges/playwright-*.json` | CI (main) |
-| LHCI | `docs/badges/*.json` | Local (`npm run perf:check`) |
+| :--- | :--- | :--- |
+| **Coverage** | `.github/badges/coverage-*.json` | CI (Branch main) |
+| **Vitest** | `.github/badges/vitest-*.json` | CI (Branch main) |
+| **Playwright** | `.github/badges/playwright-*.json` | CI (Branch main) |
+| **Lighthouse** | `docs/badges/*.json` | Local (`npm run perf:check`) |
 
-Colores: 🟢 ≥80% | 🟡 60-79% | 🟠 40-59% | 🔴 <40%
+---
 
-## Comandos Completos
+## 3. Sistema de Métricas (Thresholds)
+
+### Cobertura de Código (Code Coverage)
+[Decisión Técnica:](./../docs/dev/no-pw-cov.md) Priorizamos cobertura de líneas en Unit (Vitest) y confiabilidad funcional en E2E (Playwright).
+
+| Runner | Statements | Branches | Functions | Lines |
+| :--- | :--- | :--- | :--- | :--- |
+| **Vitest** | 80% | 60% | 80% | 80% |
+| **Playwright** | N/A* | N/A* | N/A* | N/A* |
+
+*> El comando `pw:cov` existe (NYC) pero no bloquea despliegues. Se usa solo para análisis manual.*
+
+### Core Web Vitals (Lighthouse CI)
+Límites estrictos para asegurar la experiencia de usuario.
+
+| Métrica | Límite (Desktop) | Descripción |
+| :--- | :--- | :--- |
+| **FCP** | < 1.8s | Primera pintura con contenido |
+| **LCOM** | < 2.5s | Despliegue del elemento más grande |
+| **CLS** | < 0.1 | Estabilidad visual (saltos) |
+| **Score** | > 90 | Puntuación general Performance/SEO/A11y |
+
+---
+
+## 4. Matriz de Decisión: ¿Dónde va mi test?
+
+| Escenario | Directorio | Tipo |
+| :--- | :--- | :--- |
+| Función pura `sumar(a, b)` | `tests/vitest/unit` | Unit |
+| Componente visual `Button` | `tests/vitest/component` | Component |
+| Endpoint de API JSON | `tests/vitest/api` | Unit/Integration |
+| **Flujo Crítico ("Test-Padre")** | `tests/pw/e2e/smoke` | **E2E Smoke** |
+| Reacción UI a Error 500 | `tests/pw/integration` | Integration (Mocked) |
+| Carga de página < 2s | `tests/pw/performance` | Performance |
+
+---
+
+## 5. Comandos Maestros
 
 ```bash
-# Vitest
-npm run vitest           # Watch mode
-npm run vitest:run       # Single run
-npm run vitest:cov       # Con coverage
-npm run vitest:ui        # UI interactiva
+# === 🚀 Ejecución Principal ===
+npm run test:all         # Ejecuta TODO (Unit + E2E)
+npm run vitest:run       # Solo Unitarios (Rápido)
+npx playwright test tests/pw/e2e/smoke/admin-workflow.spec.ts  # Solo Test-Padre
 
-# Playwright
-npm run pw               # Todos los tests
-npm run pw:int           # Solo integration
-npm run pw:e2e           # Solo e2e
-npm run pw:perf          # Solo performance
-npm run pw:cov           # Con NYC coverage
+# === 📊 Reportes de Coverage ===
+npm run vitest:cov       # Coverage Unitario Global
+npm run vitest:cov:l-ui  # Coverage solo submódulo log-ui
+npm run pw:cov           # Coverage E2E (Experimental/Manual)
 
-# Combinados
-npm run test:cov         # vitest:cov + pw:cov
-npm run test:all         # vitest + pw
-
-# LHCI
-npm run perf             # Audit completo
-npm run perf:check       # Validar + badges
+# === ⚡ Performance ===
+npm run perf             # Auditoría Lighthouse completa
+npm run perf:check       # Validar thresholds y generar badges
 ```
 
-## Archivos de Configuración
+---
+
+## 📂 Estructura de Archivos
 
 | Archivo | Propósito |
-|---------|-----------|
-| `vitest.config.ts` | Vitest + coverage thresholds |
-| `playwright.config.ts` | Playwright projects + webServer |
-| `.nycrc` | NYC coverage thresholds |
-| `lighthouserc.perf.json` | LHCI thresholds + URLs |
-| `scripts/check-perf-thresholds.js` | Validación LHCI + badges |
+| :--- | :--- |
+| `vitest.config.ts` | Config de Vitest global + Thresholds. |
+| `playwright.config.ts` | Config de Playwright (Proyectos, WebServer). |
+| `lighthouserc.perf.json` | Config de LHCI (URLs a auditar, límites). |
+| `.nycrc` | Config de NYC (usado por `pw:cov`). |

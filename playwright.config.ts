@@ -7,12 +7,13 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 1, // Reduced retries for faster feedback
   outputDir: "docs/test-results/artifacts",
   fullyParallel: true, // Run tests in parallel for speed
-  
+  workers: process.env.CI ? undefined : 4, // Limit workers locally to avoid server overload
+
   // Global expect timeout
   expect: {
     timeout: 10000, // Unified timeout
   },
-  
+
   // Automatic server management
   webServer: {
     command: process.env.CI ? 'npm run dev' : 'npm run start',
@@ -27,7 +28,7 @@ export default defineConfig({
       NEXT_PUBLIC_THIRDWEB_CLIENT_ID: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || 'ef963e90a058d6e8228ab34d38f50752',
     },
   },
-  
+
   // Configure projects for different test types
   projects: [
     {
@@ -78,7 +79,7 @@ export default defineConfig({
       timeout: 90000, // Performance tests need more time (90s)
     },
   ],
-  
+
   use: {
     headless: true,
     viewport: { width: 1280, height: 720 },
@@ -86,7 +87,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
   },
-  
+
   // Reporter configuration
   reporter: [
     ['list'],

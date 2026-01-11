@@ -9,29 +9,29 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/vitest/setup.ts'],
     include: [
-      'tests/vitest/**/*.test.{ts,tsx}',
-      'tests/vitest/**/*.spec.{ts,tsx}',
+      'log-ui-ts/tests/vitest/**/*.{test,spec}.{ts,tsx}'
     ],
     exclude: ['node_modules', 'dist', '.next'],
 
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'json-summary', 'html'],
-      reportsDirectory: './docs/coverage/vitest',
+      reportsDirectory: './docs/coverage/log-ui-ts',
       include: [
-        'src/**/*.{ts,tsx}',
+        'log-ui-ts/**/*.{ts,tsx}'
       ],
       exclude: [
         'node_modules/',
-        'tests/',
+        'log-ui-ts/tests/', // Exclude tests from coverage calculation
         '**/*.d.ts',
         '**/*.config.*',
-        '**/mockData',
-        '.next/',
-        'src/components/ui/**/*',
-        'src/components/ui-ac/**/*',
-        'src/lib/i18n/**/*',
       ],
+      thresholds: {
+        lines: 20,
+        functions: 20,
+        branches: 20,
+        statements: 20,
+      },
     },
   },
   resolve: {

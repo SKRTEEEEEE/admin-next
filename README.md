@@ -1,4 +1,4 @@
-# Admin Next – micro admin template
+# Profile Next Template – micro front NextJS template
 
 <div align="center">
   
@@ -44,22 +44,30 @@
 
 ## 📋 Visión General
 
-**Admin Next** es un template de landing minimalista diseñado para centralizar y monitorear el estado de múltiples micro frontends (como `admin`, `profile`, `agora`) sobre el monolito `profile-nest`. Pensado como blueprint/template reutilizable con una arquitectura simple pero poderosa, centrada en un buen CI/CD y el uso de mis librerías base favoritas.
+**Profile Next Template** es un template de landing minimalista diseñado para centralizar y monitorear el estado de múltiples micro frontends (como `admin`, `profile`, `agora`) sobre el monolito `profile-nest`. Pensado como blueprint/template reutilizable con una arquitectura simple pero poderosa, centrada en un buen CI/CD y el uso de mis librerías base favoritas.
 
 ## ✨ Características Principales
 
-- 🌍 Soporte Multiidioma - Preconfigurado para inglés, español, catalán y alemán
+- 🌍 Soporte Multi-idioma - Preconfigurado para inglés, español, catalán y alemán
 - 🎨 Sistema de Temas - 12 temas predefinidos con soporte para modo claro y oscuro
+- 🏷️ Toast errores - Sistema de muestra de errores con mensaje friendly para el usuario automáticamente
+- 🧪 Testing Completo - enfoque continuo con husky y flujo simple integrado
+  - 🖲️ Suite de tests con Playwright (unit, component, pages, integration, e2e) 
+  - 🌩️ Suite de tests ultra rápidos con Vitest (unit, api)
+  - 💻 Performance testing (Lighthouse CI + Web Vitals) 
+- 🛡️ Clean Architecture - Capas basadas en vertical clean architecture + separación por responsabilidad (shared/module)
+- 🧩 Enfoque Micro-frontend - Template fuertemente pensado para el uso con micro-frontend's
+  - 🔐 Dominio package - Fuerte acople al dominio (clean architecture) configurado como package 
+  - 🍱 Sincronización automática - Usa submodule para compartir la UI + funcionalidades fácilmente.
 - 🎭 Gradientes Animados - Fondos dinámicos configurables para crear experiencias visuales impactantes
-- ⚡ Ultra Optimizado - Construido con Next.js 16 App Router y Turbopack para máximo rendimiento
+- 🎭 Componentes Accesibles - Basado en shadcn/ui
 - 🎯 100% TypeScript - Type-safety completo en todo el proyecto
-- 📱 Totalmente Responsivo - Diseño mobile-first con Tailwind CSS 4
-- 🧪 Testing Completo - Suite de tests con Playwright (unit, component, pages, integration, e2e) + Performance testing (Lighthouse CI + Web Vitals)
-- 🎭 Componentes Accesibles - Basado en Radix UI y shadcn/ui
+- ⚡ Ultra Optimizado - Construido con Next.js 16 App Router y Turbopack para máximo rendimiento
 - 🔍 SEO Ready - Meta tags, sitemap y robots.txt preconfigurados
-- 📦 Arquitectura Simple - Una sola página, fácil de duplicar y mantener
-- 🚀 API de Estado - Endpoint de ejemplo para monitoreo de servicios
+- 📱 Totalmente Responsivo - Diseño mobile-first con Tailwind CSS 4
+- 📦 Template Simple - Una sola página, fácil de duplicar y mantener
 - 🛠️ Fácil Personalización - Todo el contenido gestionado mediante archivos JSON
+- 🚀 API de Estado - Endpoint de ejemplo para monitoreo de servicios
 
 ## 🛠️ Stack Tecnológico
 
@@ -83,7 +91,7 @@
 
 - **Testing:** 
   - [Playwright](https://playwright.dev/) (6 cat: unit, api, component, integration, e2e, performance)
-  - Vitest (2 cat: unit, api)
+  - [Vitest](https://vitest.dev/) (2 cat: unit, api)
 - **Coverage:** [NYC](https://www.npmjs.com/package/nyc) (thresholds: 60/60/60/40)
 - **Performance:** [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) (thresholds: 70/80/80/80)
 - **Linting:** [ESLint 9](https://eslint.org/) con configuración Next.js
@@ -100,7 +108,11 @@ npm run dev
 # usa PORT=3003 npm run dev si convives con otro frontend en 3000
 ```
 
-> **Nota:** Este proyecto usa `log-ui-ts` como submodule. Para configurar dependencias adicionales (como `@skrteeeeee/profile-domain`), consulta [log-ui-ts/README.md](log-ui-ts/README.md).
+> **Nota:** Este proyecto usa `log-ui-ts` como submodule. Para configurar las dependencias necesarias para utilizar-lo (como `@skrteeeeee/profile-domain`), consulta [log-ui-ts/README.md](log-ui-ts/README.md).
+> 
+> ⚠️ DISCLAIMER: *Este template usa 'dominio' como package y submodule para la lógica compartida. Para utilizar este template, crea un 'dominio' con la lógica de tu app y adapta los distintos componentes a esta*
+> - *Si quieres iniciar el proyecto 'tal como esta': [deberás asegurar-te de tener disponible `package/domain`, puedes encontrar el código utilizado en este template aquí - v0.0.2](https://github.com/SKRTEEEEEE/profile-domain)*
+> - *[Guía sobre como empezar rápido o como desplegar, aquí](./docs/dev/how-start.md)*
 
 ## 📦 Usage
 
@@ -144,62 +156,31 @@ npm run perf:check       # Validate thresholds + update badges
 
 
 ## 📁 Estructura del Proyecto
+> - 📚 **Full docs: See [docs/cleanarch.md](./docs/cleanarch.md)** for a complete guide of the purposed structure
+> - 📚 **Full docs**: See [tests/README.md](tests/README.md) for complete testing guide
+> - 📚 **Full docs**: See [log-ui-ts/README.md](./log-ui-ts/README.md) for complete log-ui-ts submodule guide
+
+
+
 ```
-admin-next/
-├─ log-ui-ts/                         # Submodule compartido (auth, components, core)
-├─ content/data/{locale}/
-│  ├─ admin.json                      # Textos de la landing por idioma
-│  └─ common.json                     # Traducciones comunes
+[your-project]/
+├─ log-ui-ts/                    # Submodule (NO modificar sin confirmar)
+├─ content/data/{locale}/        # i18n (ÚNICA fuente de verdad)
 ├─ src/
-│  ├─ app/
-│  │  ├─ [locale]/
-│  │  │  ├─ layout.tsx                # ThemeProvider + NextIntl
-│  │  │  └─ page.tsx                  # Vista principal (hero + status + diagnostics)
-│  │  └─ api/admin/status/route.ts    # API de ejemplo para monitoreo
+│  ├─ app/[locale]/             # App Router
+│  │  ├─ _componentes/          # Componentes página-específicos
+│  │  └─ [RUTA]/_componentes/   # Componentes ruta-específicos
 │  ├─ components/
-│  │  ├─ admin/                       # Componentes específicos del template
-│  │  ├─ ui/                          # shadcn/ui components
-│  │  └─ mode-toggle.tsx              # Theme switcher (6 presets x 2 modos)
-│  ├─ core/
-│  │  ├─ admin/surfaces.ts            # Mock data para API
-│  │  ├─ application/                 # Use cases e interfaces
-│  │  └─ infrastructure/              # Repositorios API
-│  └─ lib/
-│     ├─ i18n/routing.ts              # Rutas i18n (/, /gradients)
-│     ├─ utils.ts                     # Utilidades (gradients, cn)
-│     └─ metadata.ts                  # SEO helpers
-└─ tests/                             # Specs por tipo (unit/component/api/e2e)
+│  │  ├─ [DOMINIO]/             # Reutilizables proyecto
+│  │  └─ ui/                    # shadcn/ui (NO modificar estructura)
+│  ├─ core/                     # *descrito en /docs/cleanarch.md
+│  └─ lib/                      # i18n, utils, metadata
+├─ tests/                       # *descrito en /test/README.md
+│  ├─ vitest/                   # unit, api, component
+│  └─ pw/                       # component, integration, e2e, performance
+├─ docs/                        # Documentación del proyecto
+└─ .github/                     # Github Files
 ```
-
-## 🌍 Internacionalización
-- **Archivos:** `content/data/{locale}/admin.json` + `common.json`
-- **Rutas:** Configuradas en `src/lib/i18n/routing.ts`
-- **Uso:** `getTranslations("admin")` en componentes
-- **Idiomas:** en, es, ca, de (ampliable en `routing.ts`)
-
-## 🎨 Sistema de Temas
-- **Tokens:** Definidos en `src/app/globals.css` + `log-ui-ts/lib/globals.css`
-- **Presets:** 6 esquemas de color (grays, gold, neon, sky, soft) × 2 modos
-- **Gradientes:** Configurables en `src/lib/utils.ts` (usados por `AnimatedGradientBackground`)
-- **Provider:** `next-themes` en layout raíz
-
-## 🔧 Integración log-ui-ts
-Este template integra el submodule **log-ui-ts** para funcionalidades compartidas:
-- **Auth:** Autenticación con Thirdweb (setup requerido)
-- **Components:** Header, navegación, theme toggle
-- **Core:** Domain entities, repositorios base, flows
-- **Hooks:** `use-media-query` y otros hooks compartidos
-
-Ver `log-ui-ts/README.md` para setup completo de dependencias y configuración.
-
-## 🔍 SEO y Utilidades
-- `robots.ts`, `sitemap.ts` preconfigurados
-- Meta tags dinámicos por idioma en `src/lib/metadata.ts`
-- Open Graph y Twitter Cards incluidos
-- Lighthouse score optimizado (ver `lh:home` script)
-
-## CI
-- Multiples ayudas para el desarrollo continuo, descubrelas en `.github`
 
 ## 📝 License
-Código bajo MIT License (ver LICENSE en la raíz del repo). Escríbeme si necesitas reutilizarlo en otro frontend.
+Código bajo MIT License (ver LICENSE en la raíz del repo). Puedes escribir-me si necesitas reutilizarlo en otro frontend y necesitas ayuda. 💖

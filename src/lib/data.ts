@@ -13,6 +13,7 @@ export const creatorData = {
     linkedin: "https://www.linkedin.com/in/skrteeeeee/"
 };
 
+//Eliminars
 export const dataStudiesPage = [
     {
         id: 1,

@@ -1,4 +1,4 @@
-import { readProjectUC, readProjectByIdUC as readProjectByIdBasicUC } from "./_project-basic";
+import { projectApiRepository } from "@/core/infrastructure/api/project.repo";
 import { createDomainError, ErrorCodes } from "@skrteeeeee/profile-domain";
 import type { Project } from "@/core/application/interfaces/entities/project.interface";
 
@@ -11,7 +11,7 @@ import type { Project } from "@/core/application/interfaces/entities/project.int
 export const readExampleProjectsUC = async () => {
   try {
     const result = await readProjectUC();
-    
+
     if (!result.success || !result.data) {
       throw createDomainError(
         ErrorCodes.DATABASE_FIND,
@@ -21,7 +21,7 @@ export const readExampleProjectsUC = async () => {
         { entity: "example projects", optionalMessage: result.message || "Failed to read projects" }
       );
     }
-    
+
     return result.data;
   } catch (error) {
     if (error && typeof error === 'object' && 'code' in error) {
@@ -62,7 +62,7 @@ export const readProjectsDeployedUC = async () => {
 export const readProjectByIdUC = async (id: string) => {
   try {
     const result = await readProjectByIdBasicUC(id);
-    
+
     if (!result.success || !result.data) {
       throw createDomainError(
         ErrorCodes.DATABASE_FIND,
@@ -72,7 +72,7 @@ export const readProjectByIdUC = async (id: string) => {
         { entity: "project", optionalMessage: `Project with id ${id} not found` }
       );
     }
-    
+
     return result.data;
   } catch (error) {
     if (error && typeof error === 'object' && 'code' in error) {
@@ -143,32 +143,45 @@ const mapProjects = (projects: Project[] | undefined, locale: string): LandingPr
  */
 export const getProjectsForLandingUC = async (locale?: string): Promise<LandingProject[]> => {
   const normalizedLocale = resolveLocale(locale);
-  
+
   try {
     const response = await readProjectUC();
-    
+
     // Si el backend responde con error, lanzar DomainError
     if (!response.success) {
       throw createDomainError(
         ErrorCodes.DATABASE_FIND,
         getProjectsForLandingUC,
         "getProjectsForLandingUC",
-        { 
+        {
           es: "No se pudieron cargar los proyectos. Intenta más tarde.",
           en: "Could not load projects. Try again later.",
           ca: "No s'han pogut carregar els projectes. Prova més tard.",
           de: "Projekte konnten nicht geladen werden. Versuche es später erneut."
         }, // friendlyDesc con i18n
-        { 
+        {
           entity: "projects",
           optionalMessage: response.message || "Backend returned unsuccessful response"
         }
       );
     }
-    
+
     return mapProjects(response.data, normalizedLocale);
   } catch (error) {
     // Re-lanzar error para que ProjectsSection lo maneje
     throw error;
   }
 };
+/**
+ * Read all example projects (basic delegation)
+ */
+export const readProjectUC = async () => {
+  return projectApiRepository.readEjemplo();
+}
+
+/**
+ * Read project by ID (basic delegation)
+ */
+export const readProjectByIdBasicUC = async (id: string) => {
+  return projectApiRepository.readById(id);
+}

@@ -28,14 +28,16 @@ export default defineConfig({
         '**/*.config.*',
         '**/mockData',
         '.next/',
-        'src/components/ui/**/*', 
-        'src/lib/i18n/**/*', 
+        'src/components/ui/**/*',
+        'src/components/ui-ac/**/*',
+        'src/lib/i18n/**/*',
       ],
     },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@log-ui': path.resolve(__dirname, './log-ui-ts'),
     },
   },
 });

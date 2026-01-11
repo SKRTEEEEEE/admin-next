@@ -18,7 +18,7 @@ function cyberpunkGradients() {
     ["#aa367c", "rgba(14, 23, 38, 0.5)"], // verde muy oscuro + rosa base
     // negros con toque lila
     ["#aa367c", "rgba(26, 26, 46, 0.9)"], // negro azulado fuerte con rosa lila base
-    ["#aa367c", "rgba(22, 33, 62, 0.7)"], 
+    ["#aa367c", "rgba(22, 33, 62, 0.7)"],
     ["#aa367c", "rgba(14, 8, 33, 0.5)"],
     ["#ff2079", "rgba(44, 37, 74, 0.7)"], // negro violeta con rosa base
   ];
@@ -26,16 +26,6 @@ function cyberpunkGradients() {
   const angles = [85, 90.21, 95];
   const fromAlphas = [0.5, 0.7, 0.9];
   const toAlphas = [0.5, 0.7, 0.9];
-
-  function hexToRgba(hex: string, alpha: number) {
-    if (hex.startsWith('rgba')) return hex; // ya está rgba con alfa incluido
-    hex = hex.replace(/^#/, "");
-    if (hex.length === 3) hex = hex.split("").map((x) => x + x).join("");
-    const num = parseInt(hex, 16);
-    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${
-      num & 255
-    }, ${alpha})`;
-  }
 
   const gradients: string[] = [];
   cyberpunkColors.forEach(([from, to]) => {
@@ -52,20 +42,13 @@ function cyberpunkGradients() {
 
   return gradients;
 }
-export const gradients = cyberpunkGradients();
 
-// // Convierte hex a rgba con transparencia
-// function hexToRgba(hex: string, alpha: number) {
-//   // Quita #
-//   hex = hex.replace(/^#/, "");
-//   if (hex.length === 3) {
-//     hex = hex
-//       .split("")
-//       .map((x) => x + x)
-//       .join("");
-//   }
-//   const num = parseInt(hex, 16);
-//   return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${
-//     num & 255
-//   }, ${alpha.toFixed(2)})`;
-// }
+export function hexToRgba(hex: string, alpha: number) {
+  if (hex.startsWith('rgba')) return hex;
+  hex = hex.replace(/^#/, "");
+  if (hex.length === 3) hex = hex.split("").map((x) => x + x).join("");
+  const num = parseInt(hex, 16);
+  return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+}
+
+export const gradients = cyberpunkGradients();

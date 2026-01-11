@@ -55,3 +55,4 @@ docs/performance
 
 docs/test-results
 docs/coverage
+.env

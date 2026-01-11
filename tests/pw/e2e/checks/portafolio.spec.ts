@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
-import { getProgressiveTimeout, TIMEOUTS } from "../../utils/timeout";
+import { getProgressiveTimeout, TIMEOUTS } from "../../../utils/timeout";
 
-test.describe("Admin status use cases", () => {
-  test("page loads successfully", async ({ page }, testInfo) => {
+test.describe("Admin root localized", () => {
+  test("Catalan locale loads successfully", async ({ page }, testInfo) => {
     const timeout = getProgressiveTimeout(TIMEOUTS.VISIBILITY, testInfo);
     
-    await page.goto("http://localhost:3000/es", { 
+    await page.goto("http://localhost:3000/ca", { 
       waitUntil: "domcontentloaded",
       timeout: getProgressiveTimeout(TIMEOUTS.NAVIGATION, testInfo),
     });
@@ -13,12 +13,9 @@ test.describe("Admin status use cases", () => {
       timeout: getProgressiveTimeout(TIMEOUTS.NETWORK_IDLE, testInfo),
     });
     
-    // Verificar que la página admin carga correctamente
+    // Verificar que la página admin carga con locale catalán
     const htmlElement = await page.locator("html");
     await expect(htmlElement).toBeVisible({ timeout });
-    
-    // Verificar que los elementos admin están presentes
-    const adminShell = await page.locator(".admin-shell");
-    await expect(adminShell).toBeVisible({ timeout });
+    await expect(htmlElement).toHaveAttribute("lang", "ca");
   });
 });

@@ -104,6 +104,7 @@ BrainStorming
 - Cambiar `.nycrc`, `playwright.config.ts` thresholds
 - Hardcodear strings (usar i18n)
 - Skip pre-commit hooks
+- Modificar [/tests/pw/e2e/smoke/](./tests/README.md) sin confirmación exaplicita o previa
 
 ---
 

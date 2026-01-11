@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { getProgressiveTimeout, TIMEOUTS } from "../../utils/timeout";
+import { getProgressiveTimeout, TIMEOUTS } from "../../../utils/timeout";
 
 test.describe("Accessibility smoke tests", () => {
   test("page loads with correct locale", async ({ page }, testInfo) => {

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { getProgressiveTimeout, TIMEOUTS } from "../../utils/timeout";
+import { getProgressiveTimeout, TIMEOUTS } from "../../../utils/timeout";
 
-test.describe("Enhanced SEO metadata", () => {
+test.describe("SEO metadata for admin page", () => {
   test("page loads successfully", async ({ page }, testInfo) => {
     const timeout = getProgressiveTimeout(TIMEOUTS.VISIBILITY, testInfo);
     
